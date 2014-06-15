@@ -64,7 +64,6 @@ inline ptrdiff_t operator-(reverse_pointer<T1> &b,
 template<typename T1, typename T2>
 inline bool operator<(const reverse_pointer<T1> &b,
                       const reverse_pointer<T2> &o) {
-    // Note the inversion of operands
     return o.ptr < b.ptr;
 }
 template<typename T1, typename T2>
