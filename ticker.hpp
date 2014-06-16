@@ -180,7 +180,4 @@ extern ticker_factory_t ticker_t_factory;
 // cov-help uses this
 bool get_out_is_tty();
 
-void ticker_unit_tests();
-
-
 #endif /* TICKER_HPP */

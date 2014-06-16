@@ -919,9 +919,4 @@ void md5stream::unit_tests()
         assert(str_equal(md5_pair.to_pretty_string(), testStr));
     }
 }
-
-void md5_unit_tests()
-{
-    md5stream::unit_tests();
-}
 #endif // COVERITY_COMPILE_AS_C

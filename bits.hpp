@@ -5,6 +5,7 @@ int hammingWeight(T u)
     int size = sizeof(T);
     int log = 1;
     while((1 << log) < size) log++;
+    assert((1 << log) == size);
 
     for(int i = 1; i <= log; ++i) {
         int unit = (1 << i);
@@ -25,6 +26,10 @@ inline int hammingWeight(unsigned long u)
 }
 
 // use CHAR_BIT
+static unsigned char& get_byte(const void *buf, int pos)
+{
+    return ((unsigned char*)buf)[pos / CHAR_BIT];
+}
 
 // Manipulate the nth bit in the given buffer, assuming it contains that
 // many bits. Bit index 0 is the most significant bit in the first
@@ -32,32 +37,36 @@ inline int hammingWeight(unsigned long u)
 // Obtain it
 bool getNthBitInBuf(const void *buf, int pos)
 {
-    return false;
+    return getNthBitInByte(get_byte(buf, pos), pos % CHAR_BIT);
 }
 
 // Set it
 void setNthBitInBuf(void *buf, int pos)
 {
+    setNthBitInByte(get_byte(buf, pos), pos % CHAR_BIT);
 }
 
 // Clear it
 void clearNthBitInBuf(void *buf, int pos)
 {
+    clearNthBitInByte(get_byte(buf, pos), pos % CHAR_BIT);
 }
 
 // Same as above, manipulating a single byte.
 // "pos" is interpreted % CHAR_BIT
 bool getNthBitInByte(unsigned char byte, int pos)
 {
-    return false;
+    return byte & (1 << pos);
 }
+
 void setNthBitInByte(unsigned char &byte, int pos)
 {
-
+    byte |= (1 << pos);
 }
+
 void clearNthBitInByte(unsigned char &byte, int pos)
 {
-
+    byte &= (~(1 << pos));
 }
 // Obtain the index of the first set bit in "byte"; -1 if byte is 0.
 // As above, index 0 means most significant bit.
@@ -85,12 +94,6 @@ int getLastUnsetBitIndex(unsigned char byte)
 // Template to find the best integral type to store a number of
 // bits, using template specialization.
 template<int bits> struct SizedTypeForBits {
-    // If there's an actual corresponding type it will be like this:
-    // typedef uint<N> theType;
-    // I could probably be clever and define
-    // typedef typename IntWithAsLeastThisManyBits<bits - 1>::theType theType
-    // and only define the boundaries, but I'd rather not rely on
-    // template tricks more than I need to.
 };
 
 #define DEF_INT_WITH_THIS_MANY_BITS(nbits, type)    \

@@ -250,9 +250,4 @@ public:
     void raw_md5(md5_pair_t &digest);
 };
 
-
-void md5_unit_tests();
-
-
-
 #endif /* md5_INCLUDED */
