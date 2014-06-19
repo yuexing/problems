@@ -1,6 +1,11 @@
 #ifndef TICKER_HPP
 #define TICKER_HPP
 
+// title
+// header |0----------25-----------50----------75---------100|
+// sizeof(header) / max_ticks = (n, g]/(prev, cur]
+// spins: \|-/
+
 /**
  * A tick sink
  * Receives ticks from some source and processes them
@@ -118,66 +123,5 @@ private:
 
     void increment(size_t count);
 };
-
-// A tick_sink_t that does nothing
-struct null_ticker_t: public tick_sink_t {
-    void increment(size_t count);
-    void stop();
-    size_t get_max_ticks() const;
-};
-
-// A tick_sink_t that sends a given number of ticks to another tick
-// sink when it is itself ticked a given other number.
-struct scaled_ticker_t: public tick_sink_t
-{
-    // If you tick this "count" time, it will tick "underlying"
-    // scaledCount times.
-    scaled_ticker_t(
-        tick_sink_t &underlying,
-        size_t count,
-        size_t scaledCount);
-    void increment(size_t count);
-    // Stop will jump to the scaled count if necessary; it will not
-    // stop the underlying ticker.
-    void stop();
-
-    size_t get_max_ticks() const;
-
-    ~scaled_ticker_t();
-
-private:
-    tick_sink_t &underlying;
-    size_t const total;
-    size_t const scaledTotal;
-    size_t cur;
-    size_t curScaled;
-};
-
-/**
- * Ticker factory. Allows dynamic dispatch of ticker creation.
- * Base class creates a regular ticker_t.
- **/
-struct ticker_factory_t {
-    // Create a ticker with the given maximum number of ticks and
-    // given title.
-    // The title is a string which, if non-null and non-empty, is
-    // printed, followed by a newline, before the ticker itself.
-    // "ticks_to_spin" indicates the number of ticks before spinning
-    // the bar; it ticks are very fast this may need to be more than 1.
-    virtual tick_sink_t *make_ticker(
-        size_t max_ticks,
-        const char */*nullable*/title,
-        size_t ticks_to_spin = 1);
-    virtual ~ticker_factory_t(){}
-};
-
-// A factory that creates "ticker_t" objects.
-extern ticker_factory_t ticker_t_factory;
-
-// This has to be here to avoid a mutual recursion between "system"
-// and "text". I could separate this out completely to break the cycle
-// but that'd be overkill.
-// cov-help uses this
-bool get_out_is_tty();
 
 #endif /* TICKER_HPP */
