@@ -10,7 +10,8 @@ public:
     // that's annoying.
     // The iostreams will provide these ctors; throwing is not as much
     // of a problem in them because they don't have buffers to free
-    efstreambuf();
+    efstreambuf() : fd(-1) {
+    }
 
     // Open the file.
     // Throws an XSystem on failure.
@@ -19,26 +20,42 @@ public:
     // If you want to open a file that may not exist, check
     // file_exists first. This also avoids throwing exceptions in
     // normal operations, which makes debugging easier.
-    void open(const char *f, OpenFlags flags);
+    void open(const char *f, OpenFlags flags) {
+        this->flags = flags;
+        this->f = f;
+        int open_mode = 0, creat_mode = 0;
+        // fill mode from OpenFlags
+        fd = open(f, open_mode, create_mode);
+        if(fd < 0) {
+            throw exception();
+        }
+        // if not to inherite, then O_CLOEXEC
+    }
     // Close the file, if open.
-    void close();
+    void close() {
+        if(fd != -1) {
+            close(fd);
+            fd = -1;
+        }
+    }
     // Close the file if open; may throw if !uncaught_exception()
-    ~efstreambuf();
+    ~efstreambuf() {
+        close();
+    }
 
-    // Obtain file stats.
-    // On Windows, stats will be based on the original file name; on
-    // Unix, will use fstat.
-    // On Unix, it's also implemented in filename-class.cpp along with
-    // getFileStats.
-    // This calls flushWriteBuffer() so that "size" will be correct.
-    void getStats(FileStats &stats);
     // Indicates whether the file is currently open.
-    bool isOpen() const;
+    bool isOpen() const {
+        return fd != -1;
+    }
     // Name of the last open file.
     // Should only be called if is_open()
-    Filename getFilename() const;
+    const char* getFilename() const {
+        return this->f
+    }
     // Obtain the underlying file descriptor.
-    file_descriptor_t getFileDescriptor() const;
+    file_descriptor_t getFileDescriptor() const {
+        return this->fd;
+    }
 
     // Change the size of the internal buffer.
     // Only use this for testing.
@@ -46,18 +63,24 @@ public:
     // This can only be done on an open file (otherwise it will
     // assert; it is actually pointless to resize an unopen file
     // because opening will resize the buffer)
-    void resizeBuffer(size_t newSize);
+    void resizeBuffer(size_t newSize) {
+        sync();
+        buf->resize(newSize);
+    }
     
     // streambuf overrides
 protected:
 
-    int sync();
+    int sync() {
+        flushWriteBuffer();
+    }
     
     // Seeking
     override std::streampos seekoff
     (std::streamoff off,
      std::ios_base::seekdir way,
      std::ios_base::openmode which);
+
     override std::streampos seekpos
     (std::streampos sp,
      std::ios_base::openmode which);
@@ -78,14 +101,20 @@ protected:
     // this can wait.
 
 private:
-    char *buf_begin();
-    char *buf_end();
-    size_t buf_size() const;
+    char *buf_begin() {
+        return &buf.front();
+    }
+    char *buf_end() {
+        return buf_begin() + buf_size();
+    }
+    size_t buf_size() const {
+        return buf.size();
+    }
     // Non-virtual "sync"
-    void flushWriteBuffer();
-    bool convertCRLF() const;
-    // File name; empty iff not open.
-    Filename file;
+    void flushWriteBuffer() {
+        // write cur to end and replace lf->crlf.
+    }
+    
     // Internal buffer
     // Can be a read buffer or a write buffer depending on the last
     // operation.
@@ -93,6 +122,8 @@ private:
     // or be NULL; only one of them will be non-NULL at a time.
     // NULL iff not open
     vector<traits_type::char_type> buf;
+    // file name
+    const char* f;
     // File descriptor
     file_descriptor_t fd;
     // Flags used to open the file
