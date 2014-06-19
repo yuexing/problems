@@ -1,103 +1,10 @@
-/**
- * \file efstream.hpp
- * "Enhanced" fstream ('e' stands for "exception" because it will
- * throw on error)
- *
- * (c) 2010-2011,2013 Coverity, Inc. All rights reserved worldwide.
- **/
-#ifndef COV_EFSTREAM_HPP
-#define COV_EFSTREAM_HPP
+// Enhanced file-stream
+// OPENFLAGS_CONVERT_CRLF, OPENFLAGS_DELETE_ON_CLOSE
 
-#include "libs/bit-masks-alt.hpp" // ENUM_BITWISE_OPS
-#include "libs/containers/vector.hpp" // vector
-#include "libs/macros.hpp" // override
-#include "libs/text/iostream.hpp"
-#include "libs/text/fstream.hpp"
-
-// We can't include cov-windows.hpp here, because this header is used
-// too often, and windows.h has a lot of symbols that clash with our
-// own.
-// Instead, we'll use "void *" directly instead of HANDLE
-
-// #include "libs/system/cov-windows.hpp" // HANDLE
-#include "libs/system/is_windows.hpp" // is_windows
-
-#include "filename-class.hpp"
-#include "path-fwd.hpp"
-
-// I used to use OF_ as prefix, but Windows already has OF_READ
-// and OF_WRITE (for the win16 OpenFile)
-// This should also make the enumerators unique enough that I can put
-// them in the global namespace.
-enum OpenFlags {
-    // Open for reading
-    OPENFLAGS_READ            = 1 << 0,
-    // Open for writing
-    // One of OPENFLAGS_READ or OPENFLAGS_WRITE must be set.
-    OPENFLAGS_WRITE           = 1 << 1,
-    // Read & write.
-    OPENFLAGS_RW     = (OPENFLAGS_READ | OPENFLAGS_WRITE),
-    // Allow creating the file if it doesn't exist
-    // Always considered unset without OPENFLAGS_WRITE
-    OPENFLAGS_ALLOW_CREATE    = 1 << 2,
-    // Allow opening an existing file.
-    // Always considered set without OPENFLAGS_ALLOW_CREATE
-    OPENFLAGS_ALLOW_EXISTING  = 1 << 3,
-    // Allow subprocesses to inherit the handle.
-    // Without this, on Unix files are FD_CLOEXEC
-    OPENFLAGS_INHERIT         = 1 << 4,
-    // Truncate file if it exists (combine with OPENFLAGS_ALLOW_EXISTING)
-    // Only use with OPENFLAGS_WRITE
-    OPENFLAGS_TRUNCATE        = 1 << 5,
-    // Open for appending
-    // Only use with OPENFLAGS_WRITE
-    OPENFLAGS_APPEND          = 1 << 6,
-    // Convert a written lf into a cr lf
-    // Convert a read cf lf into a lf
-    OPENFLAGS_CONVERT_CRLF    = 1 << 7,
-    // Text mode, as done by libc (it's like OPENFLAGS_CONVERT_CRLF on
-    // Windows, no-op on other platforms)
-    OPENFLAGS_TEXT            = 1 << 8,
-    // Open in binary mode, i.e. not text.
-    // One of TEXT or BINARY must be set, on penalty of assertion
-    // failure.
-    // The idea is to avoid doing the wrong thing on Linux and then
-    // get weird results on Windows.
-    OPENFLAGS_BINARY          = 1 << 9,
-    // On Windows, this causes use of the Unicode API + the '\\?\'
-    // prefix to extend the path length limit.
-    // This is not done by default because this involves extra
-    // processing, which cause cause errors; furthermore, many Windows
-    // utilities (including Windows explorer) can't handle these files
-    // so it may be preferable to fail rather than create these kinds
-    // of files.
-    OPENFLAGS_ALLOW_LONG_PATH = 1 << 10,
-    // Delete the file when closed or the process exits.
-    // Used for temporary files which must be deleted regardless of
-    // how the process is exited. Note that on *nix the file will
-    // be created/opened in the file system then immediately unlinked.
-    // On Windows, the file will remain visible in the file system
-    // until deleted (closed or process exit).
-    OPENFLAGS_DELETE_ON_CLOSE = 1 << 11,
-    OPENFLAGS_ALL             = (1 << 12) - 1
-};
-
-// Is it binary or text?
-// Having a default is a bad idea; neither default is good.
-enum TextModeFlag {
-    TMF_TEXT,
-    TMF_BINARY
-};
-
-// Like filebuf, but named efstreambuf for naming consistency
 class efstreambuf:
     public streambuf {
 public:
-#ifdef __MC_MINGW__
-    typedef void *file_descriptor_t;
-#else
     typedef int file_descriptor_t;
-#endif
 
     // I'm not providing ctors that open, because they could throw and
     // that's annoying.
@@ -112,10 +19,7 @@ public:
     // If you want to open a file that may not exist, check
     // file_exists first. This also avoids throwing exceptions in
     // normal operations, which makes debugging easier.
-    void open(const Filename &f, OpenFlags flags);
-    void open(const path &f, OpenFlags flags);
     void open(const char *f, OpenFlags flags);
-    void open(const string &f, OpenFlags flags);
     // Close the file, if open.
     void close();
     // Close the file if open; may throw if !uncaught_exception()
@@ -197,8 +101,6 @@ private:
     // It may be suppressed if reading a LF later.
     bool trailing_cr;
 };
-
-ENUM_BITWISE_OPS(OpenFlags, OPENFLAGS_ALL);
 
 class eifstream: public istream {
 public:
@@ -436,8 +338,6 @@ public:
     efstreambuf buf;
 };
 
-void efstream_unit_tests(int argc, const char * const *argv);
-
 // An ofstream that uses libc (unlike "eofstream" above), so that it can
 // appropriately set the stdin/stdout/stderr integer file descriptors.
 // Only useful on Windows, because on Unix eofstream does use integer
@@ -449,4 +349,4 @@ struct intfd_ofstream:
               std::ios_base::openmode openmode);
 };
 
-#endif // COV_EFSTREAM_HPP
+
