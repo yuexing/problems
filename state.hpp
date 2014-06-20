@@ -1,26 +1,5 @@
-// state.h
-//
-// Generic interface to the state for an extension.
-//
-// Written By: Seth Hallem
-// Date: May 21, 2003
-//
-// (c) 2004-2013 Coverity, Inc. All rights reserved worldwide.
-//
-
 #ifndef __STATET_H__
 #define __STATET_H__
-
-#include <stdlib.h>
-#include <iostream>
-
-#include "arena/arena.hpp"
-#include "sm/sm.hpp"
-#include "caching/subset-caching.hpp"
-#include "libs/asthelp/asthelp-aux.hpp"  // DECL_AST_DOWNCASTS_NONTERMINAL
-#include "libs/scoped-ptr.hpp" // specialize scoped_ptr
-#include "libs/text/state-writer.hpp" // StateWriter
-#include "macros.hpp" // NO_OBJECT_COPIES
 
 // FORWARD REFS
 class cache_t;
@@ -30,26 +9,13 @@ class cache_t;
 // Generic interface to a 'state', which is whatever the extension defines
 // as the state for the purposes of the fixed point calculation.
 //
-class state_t: public AllocateOnlyOnArena
+class state_t
 {
     NO_OBJECT_COPIES(state_t);
 
 public:
-
-    // Construct a state_t with an arena.
-    state_t(mc_arena a, sm_t *sm);
-
-    // get the arena for this state_t; this should not be used
-    // to free the arena, use 'free_arena' instead
-    arena_t *get_arena() const;
-
-    arena_t &get_alloc() { return *get_arena(); }
-
-    // Free the arena associated with this state.
-    //
-    // NOTE: This frees the 'state_t' object as well!  It must
-    // not be accessed again after this call returns.
-    void free_arena();
+    state_t() {
+    }
 
     // Virtual destructor to appease the compiler.
     // Public to allow embedding state_t objects (e.g. in syn_store_t)
@@ -57,11 +23,6 @@ public:
 
     // Create an appropriate cache for this state.
     virtual cache_t *create_empty_cache(mc_arena a) const = 0;
-
-    // Make a deep copy of this state on the given arena.  The new
-    // state_t takes ownership of arena 'a'.
-    // NOOTE: Every subclass _MUST_ override this function.
-    virtual state_t* clone(mc_arena a) const = 0;
 
     // Print some debugging information for this state to the stream 'out'.
     // Allows the traversal to print debugging messages that indicate the
@@ -80,72 +41,10 @@ public:
     // debugger like gdb because it doesn't require the stream argument.
     void debug_print() const;
 
-    // Indicates whether this is a "subset_state_t".
-    DECL_AST_DOWNCASTS_NONTERMINAL(subset_state_t);
-
-    // Indicates whether this is an "empty_state_t".
-    // Don't provide a downcast, as empty_state_t contains no information.
-    virtual bool is_empty_state() const;
-
     sm_t *sm; // public to ease access
  
-    // Removed:
-    //virtual size_t compute_hash() const = 0;
-    // Was used at one point to get a (rough) count of the number of
-    // different states coming from cloning a single state (to be compared
-    // with the number of clone operations).  To resurrect a state hash
-    // function, see the changeset that introduced this comment.
 private:
-    
-    arena_t *arena;
 };
-
-/**
- * Specialize scoped_ptr for a state
- * I tried adding "delete arena" to ~state_t + empty operator delete,
- * but it doesn't work as sometimes states are embedded (e.g. in
- * syn_store_t), causing double-free of the arena
- *
- * SGM: I think that is symptomatic of flawed design.  Who owns a
- * state?  Who owns its arena?  I think the concept of a scoped_ptr
- * for states needs to be rethought.
- *
- * Also, the use of specialization here is particularly dangerous,
- * since scoped_ptr for states behaves quite differently from
- * scoped_ptr for other things.
- **/
-template <> struct scoped_ptr<state_t> {
-    NO_OBJECT_COPIES(scoped_ptr);
-public:
-    scoped_ptr(state_t *ptr):ptr(ptr){}
-    scoped_ptr():ptr(0){}
-    operator state_t*() const { return ptr;}
-    state_t* operator->() const { return ptr;}
-    state_t& operator*() const { return *ptr;}
-    state_t* get() const { return ptr;}
-    state_t *release() {
-        state_t *tmp = ptr;
-        ptr = 0;
-        return tmp;
-    }
-    void reset(state_t *new_ptr = 0) {
-        if(ptr)
-            ptr->free_arena();
-        ptr = new_ptr;
-    }
-    void swap(scoped_ptr &other) {
-        state_t* tmp = ptr;
-        ptr = other.ptr;
-        other.ptr = tmp;
-    }
-    ~scoped_ptr() {
-        reset();
-    }
-private:
-    state_t *ptr;
-};
-
-typedef scoped_ptr<state_t> scoped_state_t;
 
 /**
  * A state for "subset caching".
