@@ -2,6 +2,7 @@
 #define __STATET_H__
 
 // FORWARD REFS
+// The most interesting part are in cache_t
 class cache_t;
 
 // class state_t
@@ -11,8 +12,6 @@ class cache_t;
 //
 class state_t
 {
-    NO_OBJECT_COPIES(state_t);
-
 public:
     state_t() {
     }
