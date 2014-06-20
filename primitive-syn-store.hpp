@@ -1,39 +1,5 @@
-/**
- * primitive-syn-store.hpp
- *
- * An abstracted, primitive version of the "synonym" store, which
- * supports equivalence classes of expressions. (See syn_store_t.)
- * Has a special method, "assign", which mimicks an assignemnt
- * assign(a, b) discards any previous value in "a" and puts "a" in the
- * same equivalence class as b. Any change to "b"'s state will be
- * reflected on "a", unless the equivalence class is broken down
- * (through e.g. reset_insert, or another assignment)
- *
- * \author Andy Chou
- * \date May 29, 2003
- *
- * If you use a "custom" instantiation (see extern templates at the
- * end, and instantiations in store.cpp), you must include
- * primitive-syn-store-impl.hpp.
- *
- * (c) 2004-2014 Coverity, Inc. All rights reserved worldwide.
- **/
-
 #ifndef PRIMITIVE_SYN_STORE_HPP
 #define PRIMITIVE_SYN_STORE_HPP
-
-#include "containers/map.hpp"
-
-#include "caching/subset-caching.hpp"
-#include "patterns/extend-patterns.hpp"
-#include "store.hpp"
-#include "store-pattern.hpp"
-#include "ast/cc_ast_aux.hpp" // contains_expr_no_fn
-#include "ast/cc.ast.hpp"
-#include "allocator/vectormap.hpp" // VectorMapA
-#include "containers/resizable-bitset.hpp" // resizable_bitset
-#include "containers/foreach.hpp" // foreach
-#include "libs/optional/optional-nonnegative-int.hpp"
 
 // class primitive_syn_store_t<T>
 //
@@ -151,64 +117,83 @@ public:
     typedef value_iter<> value_iterator;
     typedef value_iter<typename equiv_map::const_iterator, const T> const_value_iterator;
 
-    // This should only be called once per function.
-    primitive_syn_store_t(arena_t *a, sm_t *sm);
-
-    // Copy an existing syn_store_t onto another arena.
-    primitive_syn_store_t(arena_t *a, const this_store_t &o);
-
     // Remove dangling references in equiv_map to ensure that every
     // equivalence class in the range of 'equiv_map' is in the domain
     // of 'valueof'.  Also ensure that the reference counts are right.
-    void normalize(vector<const Expression *> *removedExprs = NULL);
+
+    // 'dangling' also means 'reference is not correct', thus better to clear and
+    // recalculate and remove the expr not mapped in valueof.
+    void normalize(vector<const Expression *> *removedExprs) {
+        
+    }
 
     // Remove all mappings to the equivalence class from equiv_class,
     // and remove the equivalence class from valueof.
     void remove_equiv_class(
         int eq_class,
         vector<const Expression *> *removedExprs = NULL
-    );
-
-    // Determine if the store is normalized.  Return false if not, true if so.
-    bool check_normalize() const;
+    ) {
+        if(!contains(valueof, eq_class)) return;
+        foreach(it, equiv_class) {
+            if(it->second == eq_class) {
+                removedExprs.add(it->first);
+                if(!(--valueof[eq_class].refCount)) {
+                    valueof.erase(eq_class);
+                    break;
+                }
+            }
+        }
+        foreach(it, removedExprs) {
+            equiv_class.erase(*it);
+        }
+    }
 
     // Set the state for the entire equivalence class
-    void insert(const Expression *t, const T& state, bool use_tree = false);
+    void insert(const Expression *t, const T& state) {
+        int ec;
+        insert_and_get_equiv_class(t, state, ec);
+    }
 
     void insert_and_get_equiv_class(
         const Expression *t,
         const T& state,
-        int &ec,
-        bool use_tree = false);
+        int &ec) {
+        if(!contains(equiv_class, t)) {
+            ec = valueof.first_unmapped_key();
+            equiv_class[t] = ec;
+            valueof[ec] = EquivClass(state);
+        } else {
+            valueof[equiv_class[t]].state = state;
+        }
+    }
 
     // Erase the entire equivalence class
     bool erase(const Expression *t,
-               vector<const Expression *> *removedExprs = NULL);
+               vector<const Expression *> *removedExprs ) {
+        if(!contains(equiv_class, t)) return true;
+        remove_equiv_class(equiv_class[t]);
+    }
 
-    // Must manually call normalize() after several raw_erases
-    // After calling raw_erase (and before calling normalize()), you
-    // need to check has_value() before using an iterator's valueRef()
-    void raw_erase(value_iterator i);
-    void erase(value_iterator i);
-
-    void reset(iterator i);
+    bool def_ref_count(int ec)
+    {
+        if(contains(valueof, ec)) {
+            if(!(--valueof[ec].refCount)) {
+                valueof.erase(ec);
+            }
+            return true;
+        }
+        return false;
+    }
 
     // Returns "true" if it was removed.
-    bool reset(const Expression *t);
-
-    // This invalidates the iterator, including the one you pass in,
-    // because if you delete an equivalence class, it deletes other
-    // mappings that share that equivalence class.
-    // If you want to erase multiple values, use erase_if.
-    void erase(iterator i);
-
-    size_type size() const;
-
-    bool erase_all_fields(
-        const Expression *t,
-        bool *pneed_normalize = NULL,
-        vector<const Expression *> *removedExprs = NULL
-    );
+    bool reset(const Expression *t) {
+        if(contains(equiv_class, t)) {
+            dec_ref_count(equiv_class[t]);
+            equiv_class.erase(t);
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Erase all keys containing \p t.
@@ -220,31 +205,14 @@ public:
      *
      * Returns whether anything was actually erased.
      **/
-    bool erase_all(const Expression *t, vector<const Expression *> *removedExprs = NULL);
+    bool erase_all(const Expression *t, vector<const Expression *> *removedExprs = NULL) {
+        // for each gets all the removedExprs
+        // foreach one call erase(t)
 
-    bool erase_if(
-        bool (*pred)(const iterator &, void *arg),
-        void *arg,
-        bool *pneed_normalize = NULL,
-        vector<const Expression *> *removedExprs = NULL);
-
-    bool erase_if_expr(
-        bool (*pred)(const Expression *, void *arg),
-        void *arg,
-        bool *pneed_normalize = NULL,
-        vector<const Expression *> *removedExprs = NULL);
-
-    // Helpers for reset_if_expr/erase_if_expr
-    struct IfExpr {
-        bool (*pred)(const Expression *, void *arg);
-        void *arg;
-    };
-    static bool if_expr(const iterator &i, void *arg);
-
-    bool reset_all_fields(
-        const Expression *t,
-        vector<const Expression *> *removedExprs = NULL);
-
+        // or just erase and on the way delete the ec, then normalize
+        // afterwards.
+        return true;
+    }
     /**
      * "Reset" all keys containing \p t. This doesn't remove their equivalence class.
      *
@@ -257,41 +225,24 @@ public:
     bool reset_all(
         const Expression *t,
         bool reflexive = true,
-        vector<const Expression *> *removedExprs = NULL);
-
-    bool reset_if(
-        bool (*pred)(const iterator &, void *arg),
-        void *arg,
-        vector<const Expression *> *removedExprs = NULL);
-
-    /**
-     * Same as above, except the predicate takes an Expression as
-     * argument.
-     **/
-    bool reset_if_expr(
-        bool (*pred)(const Expression *, void *arg),
-        void *arg,
-        vector<const Expression *> *removedExprs = NULL);
-
-    // Erase anything matching a pattern.  Destroys entire
-    // equivalence classes.
-    bool erase_pattern(
-        AST_patterns::ExpressionPattern &pat,
-        vector<const Expression *> *removedExprs = NULL);
-
-    // Erase anything matching a pattern.  Does not destroy entire
-    // equivalence classes.
-    bool reset_pattern(
-        AST_patterns::ExpressionPattern &pat,
-        vector<const Expression *> *removedExprs = NULL);
+        vector<const Expression *> *removedExprs = NULL) {
+        // erase and on the way dec_ref(ec)
+        // NB: reflexive!
+        return true;
+    }
 
     // Set anything in the store with t as a subexpression to the
     // value.
-    void set_all(const Expression *t, const T& val, arena_t *ar);
+    void set_all(const Expression *t, const T& val, arena_t *ar) {
+        // iterates and set the valueof[ec].state
+    }
 
     // Set anything in the store with t as a subexpression to the
     // value, and also insert t into the store with the value.
-    void set_all_insert(const Expression *t, const T& val, arena_t *ar);
+    void set_all_insert(const Expression *t, const T& val, arena_t *ar) {
+        // insert
+        // set_all
+    }
 
     // Simulate an assignment of T = T2 by copying the value from T2
     // and inserting it for T.  Anything that contains T as a subtree
@@ -300,27 +251,35 @@ public:
     bool assign(
         const Expression *t,
         const Expression *t2,
-        vector<const Expression *> *removedExprs = NULL
-
-    );
-    // If T2 is in the store, the result will be identical to
-    // assign(t, t2) otherwise there will be no effect.
-    // You probably want to use assign unless you know what you're
-    // doing.
-    void assign_if_present(const Expression *t, const Expression *t2);
+        vector<const Expression *> *removedExprs
+    ) {
+        int ec1 = get_equiv(t), ec2 = t2 ? get_equiv(t2) : -1;
+        return handle_assign(ec1, ec2, removedExprs);
+    }
 
     // Consider "expr" reassigned, without any knowledge of what the
     // new value will be.
     // Returns whether it caused a change.
     bool assign_unknown(
         const Expression *expr,
-        vector<const Expression *> *removedExprs = NULL);
+        vector<const Expression *> *removedExprs) {
+        // for union, we need to reassign the union
+        return reset_all(expr, true, removedExprs);
+    }
+
+    bool remove_for_reassign(
+            const Expression *expr,
+            vector<const Expression *> *removedExprs) {
+        return assign_unknown(expr, removedExprs);
+    }
 
     // Indicates a variable going out of scope (or being dead)
     // Returns whether it caused a change.
     bool unscope(
         const E_variable *expr,
-        vector<const Expression *> *removedExprs = NULL);
+        vector<const Expression *> *removedExprs) {
+        assign_unknown(expr, removedExprs);
+    }
 
     // The guts of an 'assign', made available to avoid repeated
     // 'get_equiv' queries in some cases.  't' is the destination
@@ -329,22 +288,23 @@ public:
     // Returns whether it caused a change.
     bool handle_assign(
         const Expression *t,
-        int equiv,
-        int equiv2,
-        vector<const Expression *> *removedExprs = NULL);
+        int ec,
+        int ec2,
+        vector<const Expression *> *removedExprs = NULL) {
+        // remove_for_reassign(t)
+        // insert t to e2 
+    }
 
-    /**
-     * Merge equivalence class eq1 into eq2
-     * All trees with equiv class eq1 will have eq2 instead; the value for eq1 is discarded
-     **/
+    // Merge equivalence class eq1 into eq2
+    // All trees with equiv class eq1 will have eq2 instead; the value for eq1 is discarded
     void merge_equiv(int eq1, int eq2);
 
-    /*
-     * Merge equivalence class of t1 into t2's (similar to an assign)
-     * If one of them isn't in store it is added to the other's equiv
-     * class.
-     */
+    // if either of them exists, set all of them as that value;
+    // if all of them exists, merge(eq1, eq2)
+    // otherwise, do nothing
     void merge_equiv(const Expression *t1, const Expression *t2);
+
+    ////////// iterators ////////////////////////////
 
     iterator find(const Expression *t);
 
@@ -406,35 +366,11 @@ public:
     // fresh values.
     void reset_all_insert(const Expression *t, const T& state, arena_t *ar);
 
-
-    // Get all trees in the given equivalence class that match
-    // the given pattern.
-    template<typename pat_type> void get_equiv_trees(vector<Expression *>& trees,
-                         pat_type &pat,
-                         int e) const;
-
     void clear();
 
     const equiv_map &get_valueof_map() const;
 
 protected:
-
-    // Remove from store all the expressions that should go away if
-    // "expr" is reassigned.
-    // See "erase_all" for "removedExprs"
-    bool remove_for_reassign(
-        const Expression *expr,
-        vector<const Expression *> *removedExprs);
-
-    T &existing_valueof_ref(int equiv_class);
-
-    const T &existing_valueof_ref(int equiv_class) const;
-
-    const EquivClass &existing_equiv_class_ref(int equiv_class) const;
-
-    // Decrease the reference count of the equivalence class.
-    // Returns true if it drops down to 0.
-    bool dec_ref_count(int equiv_class);
 
     // Mapping from trees to equivalance class (int)
     equiv_class_map equiv_class;
@@ -442,19 +378,4 @@ protected:
     // Mapping from equivalence class to value
     equiv_map valueof;
 };
-
-// Callbacks for erase_if/reset_if.
-// Implemented in store.cpp
-
-// arg = address of pattern
-// Returns pattern.match(expr)
-bool pattern_matches_expr(const Expression *, void *pat);
-// arg = expression
-// Returns contains_expr_no_fn(haystack, needle, <reflexive>)
-bool expr_contains_expr_strict(const Expression *haystack, void *needle);
-bool expr_contains_expr_reflexive(const Expression *haystack, void *needle);
-
-extern template class primitive_syn_store_t<int>;
-extern template class primitive_syn_store_t<const Expression *>;
-
 #endif
