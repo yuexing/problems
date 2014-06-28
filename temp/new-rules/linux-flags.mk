@@ -1,0 +1,13 @@
+# 
+
+PLATFORM_LD_POSTFLAGS:=-static
+
+PLATFORM_SHARED_CFLAGS:=\
+-mtune=pentium3 \
+-D__MC_LINUX__ \
+-D__MC_LINUX32__ \
+-D_FILE_OFFSET_BITS=64 \
+
+BUILD_FE_CLANG:=1
+
+NO_CSHARP:=1
