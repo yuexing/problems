@@ -9,7 +9,8 @@ using namespace std;
 #include "container-util.hpp"
 
 namespace debug {
-bool dict = true;
+bool dict = false;
+bool path = true; // TODO: debug the path for the is_composition (if necessary)
 };
 
 // add
