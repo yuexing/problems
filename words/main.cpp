@@ -22,6 +22,7 @@ int main(int argc, const char* argv[])
 
     vector<string> v;
     dict.find_all(v);
+    cout << "All(" << v.size() << "):" << endl;
     foreach(it, v) {
         cout << *it << endl;
     }
