@@ -20,13 +20,18 @@ namespace debug {
 struct dict_t
 {
 public:
-    // read words from the file indicated by the path to initilize the struct.
+
     void init(const char *path);
+    bool is_composition(const string& s);
+    string find_longest();
+    void find_all(vector<string>&);
 
 private:
     void add(const string& word);
     bool check_sorted();
     void fill_indexes();
+    bool contains(const string& s);
+    bool is_composition(const string& s, bool inclusive, int min, int max);
 
     vector<string> words;
     map<int, int> lengths;

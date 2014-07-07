@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-Wall
+CXXFLAGS=-Wall -g
 
 OBJ=obj
 BIN=$(OBJ)/bin
@@ -8,7 +8,7 @@ all: $(BIN)
 $(BIN):
 	mkdir -p $@
 
-SOURCES=dict.cpp words.cpp
+SOURCES=dict.cpp main.cpp
 OBJECTS=$(SOURCES:%.cpp=$(OBJ)/%.o)
 
 $(OBJ)/%.o: %.cpp

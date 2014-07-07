@@ -6,6 +6,6 @@
 using namespace std;
 
 #define stringb(stuff) \
-    (static_cast<ostringstream*>(&(*(new ostringstream()) << stuff)))->str();
+    ((static_cast<ostringstream*>(&(*(new ostringstream()) << stuff)))->str())
 
 #endif /* STRINGB_HPP */
