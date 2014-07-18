@@ -35,7 +35,7 @@ void in_order(Node *root)
 {
     stack<Node*> s;
 
-    while(1)
+    while(root || s.empty())
     {
         while(root) {
             visit(root->left);
@@ -47,15 +47,35 @@ void in_order(Node *root)
             visit(root);
             root = root->right;
         }
-        if(!root && s.empty()) break;
     }
 }
 
 // post-order
-// I think 2 stacks can help.
+// a exploring set is helpful
 void post_order(Node *root)
 {
+    stack<Node*> s;
+    set<Node*> exploring;
 
+    while(1) {
+        while(root) {
+            visit(root->left);
+            s.push(root);
+            root = root->left;
+        }
+        while(!root && !s.empty()) {
+            root = s.pop();
+            // both left and right has been visited
+            if(contains(exploring, root)) {
+                visit(root);
+                root = NULL;
+            } else {
+                exploring.insert(root);
+                s.push(root);
+                root = root->right;
+            }
+        }
+    }
 }
 
 // bounded AVL tree
