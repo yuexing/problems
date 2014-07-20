@@ -38,6 +38,8 @@ private:
 };
 
 // A better solution may be an owner_t, which always clones the source.
+// Actually: auto_ptr_t => uniq_ptr_t
+// or                   => owner_ptr_t
 template<typename T>
 class owner_t {
 public:
