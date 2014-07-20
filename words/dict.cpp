@@ -127,7 +127,6 @@ string dict_t::find_longest()
     return "";
 }
 
-
 void dict_t::find_all(vector<string>& v)
 {
     reverse_foreach(it, indexes) {

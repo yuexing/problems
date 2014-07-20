@@ -13,7 +13,7 @@ namespace debug {
 /*
  * dict_t: store the words in a sorted vector(words), so that check-existence 
  * can be done in log(n).
- * Also, store the index to the words by the length of the words.
+ * Also, store the index to the words by the length of the words in lengths.
  * NB: the words in the file are supposed to be sorted, thus throw exception
  * if it is not.
  */
