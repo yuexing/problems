@@ -226,3 +226,5 @@ struct rw_lock_t
 
 private:
 };
+
+// TODO: manipulate the list lock-free in multi-thread env.
