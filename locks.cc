@@ -304,13 +304,44 @@ private:
     list_node_t head, *tail;
 };
 
-// RCU:
-// rcu_read_lock, rcu_read_unlock: non-preemptive
-// rcu_fetch, rcu_assign
-// rcu_synchronize: wait for all context-switch have finished.
 }
 
 // safe delete a folder in multi-thread env
 // lock on the edge? 
 // lock-handoff: lock(prev) -> lock(root), lock(next), unlock(prev). But the chilren of the prev suffers multi-thread!
 // read-write lock on each node? Yes!
+
+// RCU:
+// rcu_read_lock, rcu_read_unlock: non-preemptive
+// rcu_fetch, rcu_assign
+// rcu_synchronize: wait for all context-switch have finished. used for
+// delete.
+struct rcu_lock_t
+{
+    // readers
+    // inform the reclaimers "don't!"
+    void read_lock()
+    {
+
+    }
+
+    void read_unlock()
+    {
+
+    }
+
+    // atomic, so that the readers can see before or after, but not
+    // non-deterministic result. This is the phase of remove.
+    // writer_pid
+    void assign(void *from, void *to)
+    {
+
+    }
+
+    // the phase of reclaim(memory), which is to wait no readers.
+    // wait for no readers.
+    void synchronize()
+    {
+
+    }
+};
