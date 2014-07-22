@@ -79,7 +79,35 @@ void test_pipe()
     }
 }
 
+// FD_CLR, FD_ISSET, FD_SET, FD_ZERO: synchronize IO multiplexing.
+struct time_server_t
+{
+    // spawn a child process keeping asking for million-seconds and writing to
+    // mmaped_time.
+    time_server_t()
+    {
+        
+    }
+
+    // close the pipe, so that the child get informed. 
+    // wait for child
+    ~time_server_t()
+    {
+
+    }
+
+    int get()
+    {
+        return *mmaped_time;
+    }
+
+private:
+    int pid;
+    int *mmaped_time;
+};
+
+/*
 int main()
 {
     test_pipe();
-}
+}*/
