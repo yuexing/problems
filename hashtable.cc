@@ -55,8 +55,10 @@ struct hash_map_t
 
     struct iterator_t
     {
-        iterator_t(int idx, hash_node_t *n, hash_node_t **table, int table_size)
-          : idx(idx), n(n), table(table), table_size(table_size){
+        friend class hash_map_t;
+
+        iterator_t(hash_map_t &map, int idx, hash_node_t *n)
+          : map(map), idx(idx), n(n){
             next_avail();
           }
 
@@ -68,15 +70,15 @@ struct hash_map_t
 
         void next_avail()
         {
-            while(!n && idx < table_size) {
+            while(!n && idx < map.table_size) {
                 ++idx;
-                n = table[idx];
+                n = map.table[idx];
             }
         }
 
         bool operator==(const iterator_t &o)
         {
-            return o.idx == idx && o.n == n;
+            return &map == &o.map && o.idx == idx && o.n == n;
         }
 
         hash_node_t &operator*()
@@ -85,10 +87,9 @@ struct hash_map_t
         }
 
     private:
+        hash_map_t &map
         int idx;
         hash_node_t *n;
-        hash_node_t **table;
-        int table_size;
     };
 
     hash_map_t(const Compare& compare = Compare(),
@@ -118,7 +119,7 @@ struct hash_map_t
         hash_node_t *n = table[idx];
         while(n) {
             if(!compare(n->k, k)) {
-                return iterator_t(idx, n, table, table_size); 
+                return iterator_t(*this, idx, n); 
             }
             n = n->next;
         }
@@ -126,12 +127,12 @@ struct hash_map_t
 
     iterator_t begin()
     {
-        return iterator_t(0, table[0], table, table_size);
+        return iterator_t(*this, 0, table[0], table);
     }
 
     iterator_t end()
     {
-        return iterator_t(table_size, 0, table, table_size);
+        return iterator_t(*this, table_size, 0);
     }
 private:
     int get_idx(const K &k) 

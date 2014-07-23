@@ -15,36 +15,33 @@ private:
     EnumSet(int data): data(data) {}
     
     struct iterator_t {
-        iterator_t(int val): val(val) {
-            next_one();
+        iterator_t(EnumSet& set, int bitidx)
+            : set(set),
+              bitidx(bitidx) {
+            findNext();
         }
 
         void operator++() {
-            next_one();
+            bitidx++;
+            findNext();
         }
-        int operator*() {
-            return n;
+        EnumType operator*() {
+            return (EnumType)bitidx;
         }
 
         bool operator==(const iterator_t &o) {
-            return val == o.val;
+            return &set == &o.set && bitidx == &o.bitidx;
         }
 
     private:
-        void next_one() {
-            int oldval = val;
-            val = (val - 1) & val;
-            int diff = oldval - val;
-            int m = 0;
-            while(diff > 1) {
-                oneval >>= 1;
-                ++m;
+        void findNext() {
+            while(bitidx < nValues && !set.contains((EnumType)bitidx)) {
+                ++bitidx;
             }
-            val >>= m;
-            n += m;
         }
-        IntType val;
-        int n;
+
+        EnumSet &set;
+        int bitidx;
     };
 
 public:
@@ -65,12 +62,18 @@ public:
         return EnumSet(data | o.data); 
     }
 
+    bool contains(EnumType i) 
+    {
+        cond_assert(i < nValues);
+        return (data && 1 << i);
+    }
+
     iterator_t begin() {
-        return iterator_t(data);
+        return iterator_t(*this, 0);
     }
 
     iterator_t end() {
-        return iterator_t(0);
+        return iterator_t(*this, nValues);
     }
 
 };
