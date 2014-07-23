@@ -13,6 +13,40 @@ private:
 
     EnumSet(): data(0) {}
     EnumSet(int data): data(data) {}
+    
+    struct iterator_t {
+        iterator_t(int val): val(val) {
+            next_one();
+        }
+
+        void operator++() {
+            next_one();
+        }
+        int operator*() {
+            return n;
+        }
+
+        bool operator==(const iterator_t &o) {
+            return val == o.val;
+        }
+
+    private:
+        void next_one() {
+            int oldval = val;
+            val = (val - 1) & val;
+            int diff = oldval - val;
+            int m = 0;
+            while(diff > 1) {
+                oneval >>= 1;
+                ++m;
+            }
+            val >>= m;
+            n += m;
+        }
+        IntType val;
+        int n;
+    };
+
 public:
     EnumSet single(int val) {
         assert(val < nValues);
@@ -30,4 +64,13 @@ public:
     EnumSet operator|(const EnumSet o) {
         return EnumSet(data | o.data); 
     }
+
+    iterator_t begin() {
+        return iterator_t(data);
+    }
+
+    iterator_t end() {
+        return iterator_t(0);
+    }
+
 };
