@@ -66,6 +66,7 @@ struct hash_map_t
         {
             n = n->next;
             next_avail();
+            return *this;
         }
 
         void next_avail()

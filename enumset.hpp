@@ -4,6 +4,8 @@
 
 // The supported operations:
 // add/substract/intersect/union/all/none/iteration
+
+// NB: how nValues is used.
 template<typename EnumType, int nValues> 
 class EnumSet
 {
@@ -21,9 +23,10 @@ private:
             findNext();
         }
 
-        void operator++() {
+        iterator_t& operator++() {
             bitidx++;
             findNext();
+            return *this;
         }
         EnumType operator*() {
             return (EnumType)bitidx;

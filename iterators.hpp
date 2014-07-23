@@ -196,77 +196,200 @@ struct verify() {
 //// some interesting iterators to implement
 // through operator++, we are only interested in the elements which can pass
 // the filter_fun.
-template<typename it, typename filter_fun> 
+template<typename it_t, typename filter_fun> 
 class filter_iterator_t : public iterator
                           <bidirectional_iterator_tag,
-                          typename iterator_traits<it>::value_type,
-                          typename iterator_traits<it>::difference_type,
-                          typename iterator_traits<it>::pointer,
-                          typename iterator_traits<it>::reference >
+                          typename value_type = iterator_traits<it_t>::value_type,
+                          typename difference_type = iterator_traits<it_t>::difference_type,
+                          typename pointer = iterator_traits<it_t>::pointer,
+                          typename reference = iterator_traits<it_t>::reference >
 {
+    filter_iterator_t(it_t b, it_t e, filter_fun f)
+        : i(b), b(b) e(e), f(f) {
+            findNext();
+        }
+
+    filter_iterator_t& operator++()
+    {
+        ++i;
+        findNext(); 
+        return *this;
+    }
+
+    filter_iterator_t& operator--()
+    {
+        --i;
+        findPrev();
+        return *this;
+    }
+
+    value_type &operator*()
+    {
+        return *i;
+    }
+
+    pointer &operator->()
+    {
+        return i.operator->();
+    }
+
+    bool operator==(const filter_iterator_t &o)
+    {
+        return b == o.b && e == o.e && i == o.i;
+    }
 
 private:
-    it b, e; // begin, end
+    it_t i, b, e; // begin, end
     filter_fun f; // the function
+
+    void findNext()
+    {
+        while(i != e && !f(i)) {
+            ++i;
+        }
+    }
+
+    void findPrev()
+    {
+        while((i--) != b) {
+           if(f(i)) {
+               break;
+           } 
+        }
+    }
 };
 
 
 // NB: the class is of the it::iterator_category, thus needs more operator
 // functions.
 // BUt the point is that while opertor*, operator[], we return the f(element).
-template<typename it, typename map_fun> 
+template<typename it_t, typename map_fun> 
 class mapped_iterator : public iterator
                         <typename iterator_traits<it>::iterator_category,
-                        typename map_fun::result_type,
-                        typename iterator_traits<it>::difference_type,
-                        typename map_fun::result_type *,
-                        typename map_fun::result_type>
+                        typename value_type = map_fun::result_type,
+                        typename difference_type = iterator_traits<it>::difference_type,
+                        typename pointer = map_fun::result_type *,
+                        typename reference = map_fun::result_type>
 {
+    mapped_iterator(it_t i)
+        : i(i) {
+        }
+
+    mapped_iterator operator++()
+    {
+        ++i;
+        return *this;    
+    }
+
+    mapped_iterator operator++(int)
+    {
+        return mapped_iterator(i++);
+    }
+
+    mapped_iterator operator--()
+    {
+        --i;
+        return *this;
+    }
+
+    mapped_iterator operator--(int)
+    {
+        return mapped_iterator(i--);
+    }
+
+    value_type operator*()
+    {
+        return f(*i);
+    }
+
+    value_type operator[](const difference_type &n)
+    {
+        return f(i[n]);
+    }
+
+    bool operator==(const mapped_iterator &o)
+    {
+        return i == o.i;
+    }
 
 private:
-    it b, e; // begin, end
+    it_t i ; 
     map_fun f; // the function
 };
 
-// Also, a iterator of several iterators.
-template<typename it> 
-class union_iterator : public iterator
-                        <typename iterator_traits<it>::iterator_category,
-                        typename map_fun::result_type,
-                        typename iterator_traits<it>::difference_type,
-                        typename map_fun::result_type *,
-                        typename map_fun::result_type>
-{
-
-}
-
 // a iterator for recursive operation, eg. traversing a tree
 // a non-recurisive version of :
-// pre-order:
-/* while(root || !stack.empty()) {
-        if(root) {
-            visit(root);
-            root = root->left;
-            if(root->right) {
-            stack.push(root->right);
-            }
-        } else {
-            root = stack.top();
-            stack.pop();
-        }
- } */
-// post-order
-template<typename it, typename get_children_t> 
-class recursive_iterator : public iterator
-                           <std::forward_iterator_tag,
-                           typename iterator_traits<it>::value_type,
-                           typename iterator_traits<it>::difference_type,
-                           typename iterator_traits<it>::pointer,
-                           typename iterator_traits<it>::reference>
+namespace pre_order {
+template<typename it_t, typename get_children_t> 
+    class recursive_iterator : public iterator
+                               <std::forward_iterator_tag,
+                               typename value_type = iterator_traits<it>::value_type,
+                               typename difference_type = iterator_traits<it>::difference_type,
+                               typename pointer = iterator_traits<it>::pointer,
+                               typename reference = iterator_traits<it>::reference>
 {
+    recursive_iterator(value_type root, get_children_t get_children)
+        : get_children(get_children) {
+            s.push(it_t(root), it_t());
+        }
 
+    value_type operator*()
+    {
+        return *s.back().first;
+    }
+
+    recursive_iterator &operator++()
+    {
+        pair<it_t, it_t> children = get_children(s.back().first);
+        ++(s.back().first);
+        if(children.begin() != children.end()) {
+            s.push(children);
+        } else {
+            while(s.back().first == s.back().second) {
+                s.pop();
+            }
+        }
+        return *this;
+    }
+
+private:
+    get_children_t get_children;
+    stack<<pair<it_t, it_t> > > s;
 }
+};
+
+// push-all
+// ++ is to pop
+// * is to visit
+namespace post_order {
+template<typename it_t, typename get_children_t> 
+    class recursive_iterator : public iterator
+                               <std::forward_iterator_tag,
+                               typename value_type = iterator_traits<it>::value_type,
+                               typename difference_type = iterator_traits<it>::difference_type,
+                               typename pointer = iterator_traits<it>::pointer,
+                               typename reference = iterator_traits<it>::reference>
+{
+    recursive_iterator(value_type root, get_children_t get_children)
+        : get_children(get_children) {
+        }
+
+    value_type operator*()
+    {
+    }
+
+    recursive_iterator &operator++()
+    {
+        return *this;
+    }
+
+private:
+    get_children_t get_children;
+    stack<<pair<it_t, it_t> > > s;
+}   
+};
+
+// Program an iterator for a Linked List which may include nodes which are nested within other nodes. i.e. (1)->(2)->(3(4))->((5)(6). Iterator returns 1->2->3->4->5->6
+
 #endif /* ITERATORS_HPP */
 
-// TODO:
-// Program an iterator for a Linked List which may include nodes which are nested within other nodes. i.e. (1)->(2)->(3(4))->((5)(6). Iterator returns 1->2->3->4->5->6
