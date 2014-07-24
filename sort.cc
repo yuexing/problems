@@ -4,7 +4,8 @@
  * insert-sort
  * merge-sort
  * quick-sort
- * radix-sort
+ * radix-sort : also refered to as counting sort. but counting sort is useful
+ * for multi-factor sorting when first several factors are already sorted.
  */
 
 void select_sort(int *arr, int size)
