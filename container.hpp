@@ -6,6 +6,7 @@
 #include <queue>
 #include <stack>
 #include <string>
+#include <algorithm>
 using namespace std;
 
 #define LET(a, b) \
