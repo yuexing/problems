@@ -18,6 +18,8 @@ int find(int *arr, int size, int k)
     return -1;
 }
 
+// Note the difference btw lower, upper 
+// is how to handle the left at the end.
 int lower_bound(int *arr, int size, int k)
 {
     int left = 0, right = size;
@@ -38,8 +40,7 @@ int upper_bound(int *arr, int size, int k)
         if(arr[mid] <= k) left = mid + 1;
         else right = mid;
     }
-    if(left == 0 || arr[left - 1] != k) return -1; 
-    return left - 1;
+    return left;
 }
 
 // [lower, upper)
