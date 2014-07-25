@@ -190,3 +190,5 @@ void print_range(const Node *root, const interval_t &i)
     print_range(root, begin, end);
 }
 }
+
+// Find height of a tree without using recursion
