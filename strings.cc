@@ -185,40 +185,6 @@ private:
     }
 };
 
-// Finding the Minimum Window in S which Contains All Elements from T
-// example: S "acbbaca" T "aba"
-int minWindow(const string& p, const string &q)
-{
-    int needs[SIZE] = { 0 };
-    foreach(it, q) {
-        ++needs[*it - 'a'];
-    }
-
-    int founds[SIZE] = { 0 };
-    int count = 0;
-    int min = 0;
-    for(int i = 0; i < p.size(); ++i)
-    {
-        int idx = p[i] - 'a';
-        if(needs[idx] == 0) {
-            continue;
-        }
-
-        found[idx]++;
-        // hold the constraint
-        if(founds[idx] <= needs[idx]) {
-            count++;
-        } 
-
-        // based on the constrait
-        if(count == q.size()) {
-            // advance the begining if possible
-            // then update the global minWindow
-        }
-    }
-    return min;
-}
-
 // Write code to implement huffman coding of a string
 
 // dist btw words in a text.
@@ -226,23 +192,100 @@ static vector<string> words;
 // NB: the \p list1,\p  list2 stores the positions
 // [1,4,7,9]
 // [3,6,11,15]
-int find_mindist(vector<int> list1, vector<int> list2)
+int find_minDist(vector<int> list1, vector<int> list2)
 {
     int min = words.size();
-    for(int i = 0, j = 0; i < list1.size() && j < list2.size(); )
+    int i = 0, j = 0;
+    for(; i < list1.size() && j < list2.size(); )
     {
         int dist = abs(list1[i] - list2[j]);
         if(list1[i] < list2[j]) {
-            if(dist < min) {
-                min = dist;
-            }
             ++i;
         } else {
-            if(dist < min) {
-                min = dist;
-            }
             ++j;
+        }
+        if(dist < min) {
+            min = dist;
+        }
+    }
+    // take care about the last one.
+    if(i == list1.size()) {
+
+    } else if (j == list2.size()) {
+
+    }
+    return min;
+}
+
+// what if iterating just on the text
+// no duplicates is allowed here.
+int find_minDist2(vector<string> text, string word1, string word2)
+{
+    int loc1 = -1, loc2 = -1, min = text.size();
+    for(int i = 0; i < text.size(); ++i) {
+        if(text[i] == word1) {
+            loc1 = i;
+        } else if(text[i] == word2) {
+            loc2 = i;
+        } else continue;
+
+        if(loc1 != -1 && loc2 != -1) {
+            int dist = abs(loc1 - loc2);
+            if( dist < min) {
+                min = dist; 
+            }
         }
     }
     return min;
 }
+
+// what if we have bunch of words to look for
+// and also allow duplication for the tofind
+// NB: also referred to as minWindow.
+int find_minDist3(vector<string> text, vector<string> tofind)
+{
+    map<string, int> needs;
+    foreach(it, tofind) {
+        ++needs[*it];
+    }
+
+    map<string, int> founds;
+    queue<int> found_locs;
+    int count = 0, begin = 0, min = text.size();
+    for(int i = 0; i < text.size(); ++i) {
+        if(!contains(needs, text[i])) {
+            continue;
+        }
+        ++founds[*it];
+        found_locs.push(i);
+        if(founds[*it] < needs[*it]) {
+            ++count;
+        }
+        if(count == tofind.size()) {
+            // pop out if possible
+            do {
+                int idx = found_locs.front();
+                if(founds[idx] > needs[*it]) {
+                    begin = idx;
+                    found_locs.pop();
+                } else {
+                    break;
+                }
+            } while(1);
+            // now update the min
+            int dist = i - begin;
+            if(dist < min) {
+                min = dist;
+            }
+        }
+    }
+    return min;
+}
+
+// implement path simplification
+
+// implement cd
+
+// print all palindromes of size k possible from given alphabet set.
+// eg alphabet set : {a,e,i,o,u}
+// print all palindromes of size say 10.
