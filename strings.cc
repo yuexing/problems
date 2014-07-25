@@ -220,3 +220,29 @@ int minWindow(const string& p, const string &q)
 }
 
 // Write code to implement huffman coding of a string
+
+// dist btw words in a text.
+static vector<string> words;
+// NB: the \p list1,\p  list2 stores the positions
+// [1,4,7,9]
+// [3,6,11,15]
+int find_mindist(vector<int> list1, vector<int> list2)
+{
+    int min = words.size();
+    for(int i = 0, j = 0; i < list1.size() && j < list2.size(); )
+    {
+        int dist = abs(list1[i] - list2[j]);
+        if(list1[i] < list2[j]) {
+            if(dist < min) {
+                min = dist;
+            }
+            ++i;
+        } else {
+            if(dist < min) {
+                min = dist;
+            }
+            ++j;
+        }
+    }
+    return min;
+}
