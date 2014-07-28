@@ -29,4 +29,27 @@ private:
 };
 
 // scoped_array_t
+template<typename T>
+class scoped_array_t
+{
+public:
+    scoped_array_t() 
+        : ptr(0) {
+        }
+    scoped_array_t(T *ptr)
+        : ptr(ptr) {
+        }
+    void reset(T* p = NULL) {
+        delete[] p;
+        ptr = p;
+    }
+    ~scoped_array_t() {
+        reset();
+    }
+
+private:
+    // do not allow
+    scoped_ptr_t(const scoped_ptr_t &o);
+    scoped_ptr_t& operator=(const scoped_ptr_t &o);
+};
 #endif /* SCOPED_PTR_HPP */
