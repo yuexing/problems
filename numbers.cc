@@ -2,6 +2,8 @@
 #include "container.hpp"
 
 // test prime
+// according to the prime number theorem, the possibility of n being a prime
+// is 1/lg(n).
 bool testPrime(int n)
 {
     if(!(n % 2)) return false;
@@ -62,9 +64,87 @@ void getSubsets(vector<int> orig, vector<vector<int> > subsets)
         }
     }
 }
+// Given an array, find the subarray (consecutive) with largest sum.
+int find_largest_sum(int *arr, int size)
+{
+    scoped_array_t<int> sum(new int[size]);
+    sum[0] = arr[0];
+    for(int i = 1; i < size; ++i) {
+        sum[i] = sum[i-1] + arr[i];
+    }
+    // get the largest difference
+    int min = sum[0], max_sum = sum[0];
+    for(int i = 1; i < size; ++i) {
+        if(sum[i] - min > max_sum) {
+            max_sum = sum[i] - min;
+        }
+        if(min > sum[i]) {
+            min = sum[i];
+        }
+    }
+}
 
-// Given a number find a bigger number with the same digits otherwise return
+void extract_digits(int num, vector<char> digits)
+{
+    while(num) {
+        digits.push_back(num % 10);
+        num /= 10;
+    }
+    std::reverse(digits.begin(), digits.end());
+}
+
+int number(vector<char> digits)
+{
+    int sum = 0;
+    foreach(it, digits) {
+        int temp = sum * 10 + *it;
+        if(temp < sum) {
+            return -1;  //overflow
+        }
+    }
+    return sum;
+}
+
+// Given a number find the next bigger number with the same digits otherwise return
 // -1. E.g. 5678 -> 8754, 8765 -> -1
+// next_smaller: is to find the begin of the ascending going from the end.
+int next_bigger(int num)
+{
+    vector<char> digits;
+    extract_digits(num, digits);
+    int i = digits.size() - 1;
+    for(; i > 0; --i) {
+        if(digits[i] > digits[i-1]) { // find the begin of the descending going from the end.
+            break;
+        }
+    }
+    // the smallest digit in [i,]
+    // followed by other digits in ascending order.
+    return number(digits);
+}
+
+// Find the biggest number using the same digits from num, otherwise return -1.
+int rearrange(int num)
+{
+    vector<char> digits;
+    extract_digits(num, digits);
+    std::sort(digits.begin(), digits.end());
+    std::reverse(digits.begin(), digits.end());
+
+    // 
+    vector<char> intmax_digits;
+    extract_digits(INT_MAX, intmax_digits);
+
+    if(digits.size() == intmax_digits.size()) {
+    } else {
+        int sum = number(digits);
+        if(sum == num) {
+            return -1;
+        }
+        return sum;
+    }
+    
+}
 
 // Given an array of integers (can be both positive and negative), find 3
 // which multiply to give the largest product
@@ -80,13 +160,11 @@ void getSubsets(vector<int> orig, vector<vector<int> > subsets)
 // 2) if there are more than one 0;
 // 3) otherwise
 
-// Given an array, find the subarray with largest product.
-
 // Given an array, find out if there exist a subarray such that its sum is
 // X.
 bool findX1(int *arr, int n, int x)
 {
-    scoped_array_t sarr(new int[n]);
+    scoped_array_t<int> sarr(new int[n]);
     set<int> looking_for;
 
     int sum = 0;
@@ -103,7 +181,7 @@ bool findX1(int *arr, int n, int x)
 }
 
 // assume the array only has nonnegative numbers
-bool findX1(int *arr, int n, int x)
+bool findX2(int *arr, int n, int x)
 {
     int sum = arr[0], start = 0;
     for(int i = 1; i < n; ++i) {
@@ -123,3 +201,8 @@ bool findX1(int *arr, int n, int x)
 
 // if consecutive numbers, then almost the same as findX
 // otherwise, a partition problem.
+// 1) sort, then greedily assign the number one by one to each set;
+// 2) dyn, p(sum, n) = p(sum, n - 1) or p(sum - arr[n], n - 1)
+// 3) similar to huffman.
+
+// Another kind of partition: Birthday_problem#Partition_problem
