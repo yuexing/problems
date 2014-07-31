@@ -270,7 +270,34 @@ vector<int> lis(int *arr, int n)
 // - non-consecutive sums to X: 2^N -> N*2^(N/2); greedy; dp 
 // - partition problem 
 // - 2,3 sum problem
+bool run_subset_sum(int *arr, int **mem, int i, int x)
+{
+    if(mem[i][x] != 0) {
+        return mem[i][x] == 1;
+    }
+    int ret = 2;
+    if(arr[i] == x) {
+        ret = 1;
+    } else {
+        if(run_subset_sum(arr, mem, i-1, x) || run_subset_sum(arr, mem, i-1, x-arr[i])) {
+            ret = 1;
+        }
+    }
+    return (mem[i][x] = ret) == 1;
+}
 
-// Design an algorithm to find the maximum profit. You may complete as many transactions as you like (ie, buy one and sell one share of the stock multiple times). However, you may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
+bool subset_sum(int *arr, int n, int x)
+{
+    int **mem = new int*[n];
+    for(int i = 0; i < n; ++i) {
+        mem[i] = new int[x];
+    }
+    return run_subset_sum(arr, mem, n-1, x);
+}
+
+// Design an algorithm to find the maximum profit. You may complete as many transactions 
+// as you like (ie, buy one and sell one share of the stock multiple times). However, 
+// you may not engage in multiple transactions at the same time (ie, you must sell the 
+// stock before you buy again).
 
 // Design an algorithm to find the maximum profit. You may complete at most two transactions.
