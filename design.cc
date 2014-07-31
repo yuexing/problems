@@ -5,6 +5,16 @@
 
 // Design tinyURL
 
-// Design a key / value system
+// Design a key / value system, key-value store
 
 // Design a feeds system, write and query
+
+// webserver, and the event-counter is to be called for event counting.
+class EventCounter{
+public:
+    void Increment() ;
+    //
+    int getLastSecondCount();
+    //
+    int getLastDayCount();
+};

@@ -201,8 +201,75 @@ vector<int> nqueen(int n)
 // Output would be :
 // Seq 1 : {2,4,6,8,10,11,12,15}
 // Seq 2 : {2,4,6,8,10,14,15}
-//
+vector<vector<int>> all_lis(int *arr, int n)
+{
+    vector<vector<int> > res;
+    for(int i = 0; i < n; ++i) {
+        bool added = false;
+        foreach(it, res) {
+            if(arr[i] > it->back()) {
+                added = true;
+                it->push_back(arr[i]);
+            }
+        }
+        if(!added) {
+            vector<int> v;
+            v.push_back(arr[i]);
+            res.push_back(v);
+        }
+    }
+    return res;
+}
+
 // or longest increasing sequence.
+// assume no duplicates
+vector<int> lis(int *arr, int n)
+{
+    // mins[j] indicates the smallest k a increasing-subsequence ends with.
+    // non-decreasing arr[mins[k]]
+    int *mins = new int[n];
+    // to construct the list, // init with -1
+    int *prevs = new int[n];
+    // current longest, used to search in mins
+    int max = 0;
+    for(int i = 0; i < n; ++i) {
+        // search upperbound in mins
+        int lo = 0, hi = max + 1;
+        while(lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if(arr[i] > arr[mins[mid]]) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
+            }
+        }
+        // 
+        int newL = lo;
+        //
+        prevs[i] = mins[newL];
+        //
+        if(newL > max) {
+            mins[newL] = i;
+            max = newL;
+        } else if(arr[i] < arr[mins[newL]]) {
+            mins[newL] = i
+        }
+    }
+    
+    // construct
+    vector<int> res;
+    for(int i = mins[max]; i != -1; i = prevs[i]) {
+        res.push_back(i);
+    }
+    std::reverse(res.begin(), res.end());
+    return res;
+}
+
+// subset-sum problem
+// - consecutive sums to X
+// - non-consecutive sums to X: 2^N -> N*2^(N/2); greedy; dp 
+// - partition problem 
+// - 2,3 sum problem
 
 // Design an algorithm to find the maximum profit. You may complete as many transactions as you like (ie, buy one and sell one share of the stock multiple times). However, you may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
 

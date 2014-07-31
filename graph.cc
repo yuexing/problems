@@ -44,6 +44,53 @@ int djikstra(gnode_t* src, gnode_t* dest)
 
 // Bellman-Ford
 // slow-version of Djikstra.
+int bellmanFord(int **dists, int n, int m, int src, int dest)
+{
+    int **mem = new int*[m];
+    for(int i = 0; i < m + 1; ++i) {
+        mem[i] = new int[n];
+    }
+
+    // init all as INT_MAX
+    mem[0][src] = 0;
+
+    // run
+    for(int i = 1; i <= m; ++i) {
+        for(int j = 0; j < n; ++j) {
+            // look at all the adjacent
+            int min = INT_MAX;
+            for(int k = 0; k < n; ++k) {
+                if(mem[i-1][k] != INT_MAX && dists[k][j] != INT_MAX) {
+                    int temp = mem[i-1][k] + dists[k][j];
+                    if(temp < min) {
+                        min = temp
+                    }
+                }
+            }
+            mem[i][j] = min;
+        }
+    }
+
+    return mem[m][dest];
+}
+
+// Floyd Warshall
+// improving an estimate on the shortest path between two vertices, until the
+// estimate is optimal.
+void floyd(int **dists, int n, int **res)
+{
+    // initialize res with dists
+    // run
+    for(int k = 0; k < n; ++k) {
+        for(int i = 0; i < n; ++i) {
+            for(int j = 0; j < n; ++j) {
+                // need a copy?
+                // NO!
+                res[i][j] = min(res[i][k] + res[k][j], res[i][j]);
+            }
+        }
+    }
+}
 
 // Tarjan SCC
 
