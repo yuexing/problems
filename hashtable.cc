@@ -1,3 +1,5 @@
+// hash function ideas
+
 // implement a hashmap
 template<class T>
 struct hash_t 
@@ -88,7 +90,7 @@ struct hash_map_t
         }
 
     private:
-        hash_map_t &map
+        hash_map_t &map;
         int idx;
         hash_node_t *n;
     };

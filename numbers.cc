@@ -206,3 +206,65 @@ bool findX2(int *arr, int n, int x)
 // 3) similar to huffman.
 
 // Another kind of partition: Birthday_problem#Partition_problem
+
+
+// Replace element of an Array with nearest bigger number at right side of the
+// Array in O(n) 
+void replace_right_bigger(int *arr, int n)
+{
+    int *right_bigger = new int[n];
+    
+    stack<int> s;
+    s.push(arr[n-1]);
+
+    for(int i = n - 2; i > -1; ++i) {
+        while(!s.empty()) {
+            if(s.top() <= arr[i]) {
+                s.pop();
+            } 
+        }
+        if(s.empty()) {
+            right_bigger[i] = arr[i];
+        } else {
+            right_bigger[i] = s.top();
+        }
+        s.push(arr[i]);
+    }
+}
+
+// A similar one is to trap rain water
+// get-left-biggest -> idx
+// get-right-biggest -> idx
+int total_trap_water(int *arr, int n)
+{
+    int max = arr[0];
+    int *maxL = new int[n];
+    maxL[0] = -1;
+    for(int i = 1; i < n; ++i) {
+        maxL[i] = max;
+        if(arr[i] > max) {
+            max = arr[i];
+        }
+    }
+    max = arr[n-1];
+    int area = 0;
+    for(int i = n -2; n > -1; --n) {
+        int hight = std::min(maxL[i], max);
+        if(hight > arr[i]) {
+           area += (hight - arr[i]); 
+        } else {
+            /* most come to here */
+        }
+    }
+    return area;
+}
+
+// foreach i
+// get left next smaller
+// get right next smaller
+//
+// can this be reduced to one loop?
+int hist_area(int *arr, int n)
+{
+    return -1;
+}

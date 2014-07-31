@@ -5,7 +5,7 @@
 // count degree
 int find_influencer1(int **follow, int n)
 {
-    int *degreeIn = new int[n], degreeOut = new int[n];
+    int *degreeIn = new int[n], *degreeOut = new int[n];
     for(int i = 0; i < n; ++i) {
         for(int j = 0; j < n; ++j) {
             if(follow[i][j]) {
@@ -31,16 +31,16 @@ void dfs(int **follow, int n, int i, set<int> &visited, set<int> &roots)
     for(int j = 0; j < n; ++j) {
         if(follow[i][j]) {
             hasFollow = true;
-            dfs(follow, n, j, visited, root);
+            dfs(follow, n, j, visited, roots);
         }
     }
     if(!hasFollow) {
-        roots.insert(j);
+        roots.insert(i);
     }
 }
 
 // do DFS search
-int find_influencer2(int *follow, int n)
+int find_influencer2(int **follow, int n)
 {
     set<int> visited;
     set<int> roots;
@@ -54,3 +54,6 @@ int find_influencer2(int *follow, int n)
     // check roots now, trivial
     return -1;
 }
+
+// rotate a matrix by 90 degree
+

@@ -2,6 +2,7 @@
 #define _CONTAINER_HPP
 
 #include <vector>
+#include <map>
 #include <set>
 #include <queue>
 #include <stack>
