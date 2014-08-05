@@ -5,90 +5,38 @@ int hammingWeight(T u)
     int size = sizeof(T);
     int log = 1;
     while((1 << log) < size) log++;
-    assert((1 << log) == size);
+    assert((1 << log) == size); // 8(3), 16(4), 32(5)
 
-    for(int i = 1; i <= log; ++i) {
+    for(int i = 0; i < log; ++i) {
         int unit = (1 << i);
-        int base = unit - 1;
-        int mask = base;
-        for(int total = size; total; total -= unit * 2) {
-            mask |= (base << unit);
-        }
-        u = (u & mask) + ((u >> unit) & mask);
+        u |= (u >> unit);
     }
+    return u;
 }
 
-// Add an extra overload so that "unsigned long" is not ambiguous.
-inline int hammingWeight(unsigned long u)
+// swap(reverse) bits in a byte
+uint8_t swap1(uint8_t c)
 {
-    return sizeof(u) == sizeof(uint64) ? hammingWeight((uint64)u)
-        : hammingWeight((uint32)u);
+    uint8_t ret = 0;
+    uint8_t idx = 7;
+
+    while(c) {
+        ret |= (c & 1) << (idx--);
+        c >>= 1;
+    }
+    return ret;
 }
 
-// use CHAR_BIT
-static unsigned char& get_byte(const void *buf, int pos)
+// find if byte a palindrome or not
+bool is_palindrome(uint8_t c)
 {
-    return ((unsigned char*)buf)[pos / CHAR_BIT];
-}
-
-// Manipulate the nth bit in the given buffer, assuming it contains that
-// many bits. Bit index 0 is the most significant bit in the first
-// byte, so that lexicographic order by bit is the same as numeric order.
-// Obtain it
-bool getNthBitInBuf(const void *buf, int pos)
-{
-    return getNthBitInByte(get_byte(buf, pos), pos % CHAR_BIT);
-}
-
-// Set it
-void setNthBitInBuf(void *buf, int pos)
-{
-    setNthBitInByte(get_byte(buf, pos), pos % CHAR_BIT);
-}
-
-// Clear it
-void clearNthBitInBuf(void *buf, int pos)
-{
-    clearNthBitInByte(get_byte(buf, pos), pos % CHAR_BIT);
-}
-
-// Same as above, manipulating a single byte.
-// "pos" is interpreted % CHAR_BIT
-bool getNthBitInByte(unsigned char byte, int pos)
-{
-    return byte & (1 << pos);
-}
-
-void setNthBitInByte(unsigned char &byte, int pos)
-{
-    byte |= (1 << pos);
-}
-
-void clearNthBitInByte(unsigned char &byte, int pos)
-{
-    byte &= (~(1 << pos));
-}
-// Obtain the index of the first set bit in "byte"; -1 if byte is 0.
-// As above, index 0 means most significant bit.
-int getFirstSetBitIndex(unsigned char byte)
-{
-
-}
-// Same for unset bit
-int getFirstUnsetBitIndex(unsigned char byte)
-{
-
-}
-// Obtain the index of the last set bit in "byte"; -1 if byte is 0.
-// As above, index 0 means most significant bit.
-int getLastSetBitIndex(unsigned char byte)
-{
-
-}
-// Same for unset bit
-int getLastUnsetBitIndex(unsigned char byte)
-{
-
+    uint8_t i = 0, j = 7;
+    while(i < j) {
+        if((c & (1 << i)) != (c & (1 << j))) {
+            return false;
+        }
+    }
+    return true;
 }
 
 // Template to find the best integral type to store a number of
