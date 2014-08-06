@@ -27,4 +27,16 @@ void printGrayCode(int n)
 // detect LRM(left-right-mark)
 // U+200E
 
-//
+// to/from base64
+// testcase: 
+// 3 -> 4 Man -> TWFu
+// Input: any carnal pleasure.  Output: YW55IGNhcm5hbCBwbGVhc3VyZS4=  
+// Input has 20 bytes, output has 28 bytes (1 padding). 
+// Input: any carnal pleasure   Output: YW55IGNhcm5hbCBwbGVhc3VyZQ==  
+// Input has 19 bytes, output has 28 bytes (2 padding). 
+// Input: any carnal pleasur    Output: YW55IGNhcm5hbCBwbGVhc3Vy      
+// Input has 18 bytes, output has 24 bytes (no padding). 
+// Input: any carnal pleasu     Output: YW55IGNhcm5hbCBwbGVhc3U=      
+// Input has 17 bytes, output has 24 bytes (1 padding). 
+// Input: any carnal pleas      Output: YW55IGNhcm5hbCBwbGVhcw==      
+// Input has 16 bytes, output has 24 bytes (2 padding). 
