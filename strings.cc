@@ -89,6 +89,8 @@ bool strstr(string p, string q)
 // The intuition is to count and minHeap
 // to combine them, need a trie and a minHeap
 
+// implementing with hashmap and minHeap can also solve the problem, with 
+// O(n + nlg(k))
 #define SIZE 26
 
 struct trieAndHeap
@@ -109,7 +111,7 @@ struct trieAndHeap
               }
     };
 
-    static cmp_node_t(const node_t& n1, const node_t& n2)
+    static int cmp_node_t(const node_t& n1, const node_t& n2)
     {
         return 0;
     }
@@ -124,20 +126,20 @@ struct trieAndHeap
 
         void addOrUpdate(node_t *n)
         {
-            if(n.heapIdx != -1) {
+            if(n->heapIdx != -1) {
                 filterDown(n);
             }
 
             if(size == capacity) {
-                if(n.count > arr[0].count) {
-                    arr[0].heapIdx = -1;
+                if(n->count > arr[0]->count) {
+                    arr[0]->heapIdx = -1;
                     arr[0] = n;
-                    n.heapIdx = 0;
+                    n->heapIdx = 0;
                     filterDown(n);
                 }
             } else {
                 arr[size] = n;
-                n.heapIdx = size++;
+                n->heapIdx = size++;
                 filterUp(n);
             }
         }
@@ -174,8 +176,8 @@ private:
             n = root->children[s[0]] = new node_t;
         }
         if(s[1] == '\0') {
-            n.is_end = true;
-            n.count++;
+            n->is_end = true;
+            n->count++;
             
             // also put into the minHeap
             heap.addOrUpdate(n);
@@ -256,16 +258,16 @@ int find_minDist3(vector<string> text, vector<string> tofind)
         if(!contains(needs, text[i])) {
             continue;
         }
-        ++founds[*it];
+        ++founds[text[i]];
         found_locs.push(i);
-        if(founds[*it] < needs[*it]) {
+        if(founds[text[i]] < needs[text[i]]) {
             ++count;
         }
         if(count == tofind.size()) {
             // pop out if possible
             do {
                 int idx = found_locs.front();
-                if(founds[idx] > needs[*it]) {
+                if(founds[text[idx]] > needs[text[i]]) {
                     begin = idx;
                     found_locs.pop();
                 } else {
@@ -283,9 +285,150 @@ int find_minDist3(vector<string> text, vector<string> tofind)
 }
 
 // implement path simplification
-
 // implement cd
+void split(string s, char sep, list<string> v)
+{
+    const char *cs = s.c_str();
+    for(int i = 0, begin = 0; i < s.size(); ++i) {
+        if(cs[i] == sep) {
+            if(i - begin > 1) {
+                v.push_back(s.substr(begin, i - begin));
+            }
+            begin = i;
+        } 
+    }
+}
+
+string join(list<string> v, char sep)
+{
+    return "";
+}
+
+string cd(string path)
+{
+    string pwd = getenv("PWD");
+    list<string> parts;
+    split(pwd, '/', parts);
+    split(path, '/', parts);
+    LET(i, parts.begin());
+    LET(j, parts.begin());
+    while(i != parts.end()) {
+        if(*i == ".") {
+            i = parts.erase(i);
+        } else if(*i == "..") {
+            parts.erase(i - 1);
+            i = parts.erase(i);
+        } else {
+            *j = *(i++);
+        }
+    }
+}
+extern bool str_equal(const string &s1, const string &s2);
+// for c-string
+extern bool str_equal(const char* s1, const char *s2);
+
+#include <fstream>
+// parse a log, print the concurrent processes at a moment.
+void print_concurrency(const char* log)
+{
+    ifstream ifs(log, ifstream::in);
+    set<int> curs;
+    while(ifs) {
+        string line;
+        getline(ifs, line);
+        line.clear();
+
+        list<string> parts;
+        split(line, ',', parts);
+
+        int pid = atoi(parts[0]);
+        int time = atoi(parts[1]);
+        if(str_equal(parts[2], "start")) {
+            curs.insert(pid);
+        } else if(str_equal(parts[2], "end")) {
+            curs.erase(pid);
+        }
+        /*
+        cout << "at time " << time << ": "
+          << printable_container(curs); */
+    }
+}
 
 // print all palindromes of size k possible from given alphabet set.
 // eg alphabet set : {a,e,i,o,u}
 // print all palindromes of size say 10.
+extern gen_help(int i, int j, int k, string &buf, const string &cset);
+void gen(int k, const string cset)
+{
+    string buf(cset.size());
+    int i = -1, j = -1;
+    if(k % 2 == 1) {
+        i = k/2;
+        j = k/2 + 2;
+        foreach(it, cset) {
+            buf[k/2 + 1] = *it;
+            gen_help(i, j, k, buf, cset);
+        }
+    } else {
+        i = k/2;
+        j = k/2 + 1;
+        gen_help(i, j, k, buf, cset);
+    }
+
+}
+
+// regex:
+// metachar: . * ? ^ $
+bool matches(const char* regex, const char *s, int i, int j /*, mem*/)
+{
+    if(regex[i] == '.') {
+        return matches(regex, s, i + 1, j);
+    } else if(regex[i] == '*') {
+        int k = j;
+        while(s[k] == s[k-1]) {
+            if(matches(regex, s, i + 1, k)) {
+                return true;
+            }
+        }
+    } else if(regex[i] == '?') {
+        if(matches(regex, s, i + 1, j)) {
+            return true;
+        }
+        return s[j] == s[j-1] && matches(regex, s, i + 1, j + 1);
+    } else if(regex[i] == '$') {
+        return s[j] == '\0';
+    } else return regex[i] == s[j];
+}
+
+bool match(const char* regex, const char* s)
+{
+if(regex[0] == '^') {
+    return matches(regex + 1, s);
+} else {
+    for(int i = 0; i < strlen(s); ++i) {
+        if(matches(regex, s + i)) {
+            return true;
+        }
+    }
+}
+}
+
+// hufman
+void hufman(const string s)
+{
+    // 
+    map<char, int> counts;
+    // 
+    foreach(it, counts) {
+        //minQueue.add(new node(it->first, it->second);
+    }
+    /* 
+    while(!minQueue.size() > 1) {
+        minQueue.pop();
+        minQueue.pop();
+        new node('\0', 1 + 2);
+        minQueue.add();
+    }*/
+}
+
+// generate BST given preorder

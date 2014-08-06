@@ -268,3 +268,10 @@ int hist_area(int *arr, int n)
 {
     return -1;
 }
+
+// a path in a tree sum up to X
+// pre-order to leaves
+
+// a sub-path in a tree sum up to X
+
+// M liter and N liter jug problem
