@@ -275,3 +275,48 @@ int hist_area(int *arr, int n)
 // a sub-path in a tree sum up to X
 
 // M liter and N liter jug problem
+
+// interval overlapping
+// given a list of intervals, or may be interpreted as <pid, start, end>
+// find the interval overlapping with most intervals, or concurrently 
+// run with most processes.
+struct interval
+{
+    int x, y;
+};
+// compared by x
+struct point_t
+{
+    int x;
+    int idx;
+    bool is_start;
+
+    point_t(int x, int idx, bool is_start){}
+    bool operator<(const point_t& o) const{
+        return false;
+    }
+};
+
+int find_most_overlapping(vector<interval> is)
+{
+    set<point_t> points;
+    for(int i = 0; i < is.size(); ++i) {
+        points.insert(point_t(is[i].x, i, true));
+        points.insert(point_t(is[i].y, i, false));
+    }
+    int counts = 0, max = 0;
+    // idx -> counts/ overlapping-counts
+    map<int, int> overlaps;
+    foreach(it, points) {
+        if(it->is_start) {
+            overlaps[it->x] = counts;
+            ++counts;
+        } else {
+            overlaps[it->x] = counts - overlaps[it->x];
+            if(overlaps[it->x] > max) {
+                max = overlaps[it->x];
+            }
+        }
+    }
+    return max;
+}
