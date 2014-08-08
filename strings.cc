@@ -432,3 +432,6 @@ void hufman(const string s)
 }
 
 // generate BST given preorder
+
+// longest prefix, suffix
+// nlogn?

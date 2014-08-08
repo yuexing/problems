@@ -192,3 +192,32 @@ void print_range(const Node *root, const interval_t &i)
 }
 
 // Find height of a tree without using recursion
+
+
+struct interval_node_t
+{
+    int i, j, largest_j;
+    interval_node_t *left, *right;
+};
+
+// The tree is sort by i. largest_j is the largest j in the subtree 
+// rooted at the node.
+// print out all the intervals containing the n
+void print_intervals(interval_node_t *r, int n)
+{
+    if(!r) {
+        return;
+    }
+
+    if(r->i <= n) {
+        if(r->j >= n) {
+            //print
+        } 
+        if(r->largest_j >= n) {
+            print_intervals(r->left, n);
+            print_intervals(r->right, n);
+        }
+    } else {
+        print_intervals(r->left, n);
+    }
+}

@@ -251,6 +251,7 @@ struct list_node_t
     list_node_t(int v): v(v), next(NULL) {}
 };
 
+// cxchg: conditionally exchange is known as CAS(compare and swap).
 struct list_t
 {
     list_t(): head(-1), tail(&head) {}
@@ -258,7 +259,7 @@ struct list_t
     void push(int v)
     {
         list_node_t *n = new list_node_t(v);
-        while(cxchg(tail->next, NULL, n) == NULL);
+        while(cxchg(&(tail->next), NULL, n) != NULL);
         tail = n; // this is atomic 
     }
 
@@ -266,7 +267,7 @@ struct list_t
     {
         do {
             v->next = t->next; 
-        } while(cxchg(v, t->next, v->next) == v->next);
+        } while(cxchg(&(t->next), v->next, v) != v->next);
     }
 
     void delete_after(list_node_t *t)
@@ -274,7 +275,7 @@ struct list_t
         list_node_t* v;
         do {
             v = t->next;
-        } while(cxchg(t->next, v, v->next) == v);
+        } while(cxchg(&(t->next), v, v->next) != v);
         // NB: at this state, both v and t are pointing to the same v->next,
         // which is very unsafe!
         // So, the difference btw insert and delete is that the node to be deleted 
@@ -345,3 +346,15 @@ struct rcu_lock_t
 
     }
 };
+
+// real-world example: pthread library. A C library.
+// struct pthread_t, pthread_attr_t, pthread_mutext_t, pthread_cond_t, pthread_semphore_t
+// - define instance on stack and pass into address to init;
+// - pass when calling functions, value will be returned through addr, error/success will be returned through return
+
+// barrier: any thread in a group must stop at this points and cannot proceed until all other threads reach this barrier.
+// memory barrier: enforce the ordering constraint.
+// barrier is just an opposite of semphore.
+
+// future: where you can get value. 
+// promise/async: create value.

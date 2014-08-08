@@ -57,3 +57,21 @@ int find_influencer2(int **follow, int n)
 
 // rotate a matrix by 90 degree
 
+// Given a board of black and white, find the min/max black rectangle
+int find_max(int **m)
+{
+    // thinking about 2 pair of matrix, the first one use height/left
+    // the second one use width/right
+    // update height/left:
+    // if mm[x,y] == 0, height[x,y] = 0, left[x,y] = 0
+    // otherwise,       height[x,y] = height[x-1,y] + 1, left[x,y] = min(left[x-1,y], left[x, y-1])
+    return -1;
+}
+
+// find the min rectangle containing all the black.
+int find_min(int **mm)
+{
+    // on the way, update the 4 variables.
+    int minx, miny, maxx, maxy;
+    return (maxx - minx + 1) * (maxy - miny + 1);
+}
