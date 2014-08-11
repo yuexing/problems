@@ -1,11 +1,5 @@
 #ifndef VARWIDTH_H
 #define VARWIDTH_H
-enum VarWidthError {
-
-  VWE_NO_ERROR = 0,          // no error; success
-  VWE_ENCODING_TOO_LARGE,    // the encoded bytes decode to a value too large for this machine
-};
-typedef enum VarWidthError VarWidthError;
 
 // Maximum number of bytes to encode a number
 #define VARWIDTH_MAX_WIDTH 9
@@ -29,13 +23,28 @@ typedef enum VarWidthError VarWidthError;
 // '**dest' must have enough space to allow this.
 void varWidthEncodeInt64(unsigned char **dest, sint64 value)
 {
+    unsigned char* buf = *dest;
+    for(int nbytes = 1; nbytes <= 8; ++nbytes) {
+        sint64 lo = -(1 << (nbytes * 8 - nbytes)),
+               hi = -(lo + 1);
+        if(value <= hi && value >= lo) {
+           unsigned char val = value >> ((nbytes - 1) * 8);
+           val |= 0xfe << (8 - nbytes);
+           buf[0] = val;
 
-}
-// 32-bit version. Could be made more efficient on 32-bit platforms
-// but we currently don't do it. Doesn't write more than 5 bytes.
-void varWidthEncodeInt32(unsigned char **dest, sint32 value)
-{
+           for(int j = 1; j < nbytes; ++j) {
+                buf[j] = (value >> (nbytes -j - 1) * 8);
+           }
 
+           *dest = buf + nbytes;
+        }
+    }
+    // 9
+    buf[0] = 0xff;
+    for(int j = 1; j < 9; ++j) {
+        buf[j] = (value >> (8 - j) * 8);
+    }
+    *dest = buf + 9;
 }
 
 // Decode the next value from '**src', storing the decoded value in
@@ -43,24 +52,32 @@ void varWidthEncodeInt32(unsigned char **dest, sint32 value)
 //
 // If there is an error, its code is returned, and neither '*src' nor
 // '*value' are modified.
-void varWidthDecodeInt64(unsigned char const **src, sint64 *value);
-// This version can return VWE_ENCODING_TOO_LARGE
-VarWidthError varWidthDecodeInt32(unsigned char const **src, sint32 *value);
+void varWidthDecodeInt64(unsigned char const **src, sint64 *value)
+{
+    unsigned char* buf = *src;
 
-// Return the total number of bytes used in the encoding that begins
-// with 'firstByte', with that byte included in the count.  Return
-// value is between 1 and 9, inclusive, unless the first byte is not a
-// valid initial byte, in which case 0 is returned.  This function
-// does not take into account whether the encoded value can be
-// represented as a 'long' on the host machine.
-//
-// The intended purpose is to allow a deserializer to read one byte,
-// then use this function to determine how many more bytes need to be
-// read (which is this function's return value minus one).
-int getVarWidthEncodingSizeFromFirstByte(unsigned char firstByte);
+    int nbytes = 1;
+    unsigned char base = buf[0];
+    while(base & 0x80) {
+        ++nbytes;
+        base <<= 1;
+    } 
 
-// Number of bytes required to encode this value.
-int getVarWidthEncodingSizeForInt64(sint64 value);
+    *value = 0;
+    if(nbytes == 9) {
+        for(int j = 1; j < 9; ++j) {
+            *value |= buf[j] << (8 - j);
+        }
+    } else {
+        // first bytes
+        *value |= (buf[0] & (~(0xfe << (8 - nbytes)))) << (nbytes - 1);
+        // others
+        for(int j = 1; j < nbytes; ++j) {
+            *value |= buf[j] << (nbytes - j - 1);
+        }
+    }
 
+    *src += nbytes;
+}
 
 #endif /* VARWIDTH_H */
