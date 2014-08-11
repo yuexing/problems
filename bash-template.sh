@@ -18,27 +18,27 @@ i=$((1+2));
 echo $i;
 
 if [[ $i = 1 || $i = 3 ]]; then
-    echo "yes!"
+    echo "yes!"                             #!
 else
     echo "hmmm..."
 fi
 
 if [[ $i > 1 ]]; then
-    echo "definitely should use [[]]";
+    echo "definitely should use [[]]";      #!
 fi
 
 if [[ "abc" = a* ]]; then
-    echo "wildcard glob works";             # yeah!
+    echo "wildcard glob works";             #!
 fi
 
 if [[ 10 > 8 ]]; then
     echo "arithmetic comparison"
 else
-    echo "Ah... string comparison"          # sucks!
+    echo "Ah... string comparison"          #!
 fi
 
 if [[ 10 -gt 8 ]]; then
-    echo "arithmetic comparison"            #yeah!
+    echo "arithmetic comparison"            #!
 fi
 
 LIST=$(ls);
@@ -64,3 +64,18 @@ done
 
 # use egrep for extended-regex-expression, including ?/+/(/etc.
 # use fgrep for literally match
+
+# find 
+# -exec: each command ends with ';', need to be \; also use sh -c "cmd && cmd"
+# -execdir: go into the dir and exec
+find . -name "* *"  -execdir rename -v 's/ /_/' {} \;
+
+# file read/write
+cat > temp << END
+    app1    path1
+    app2    path2
+END
+while read app path; do
+done < temp
+
+# run || FAILED="FAILED $app"
