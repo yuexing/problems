@@ -1,0 +1,7 @@
+{"orderId": 100, "status": "NEW", "updateId":287, "amount": 20}
+{"orderId": 100, "status": "COOKING", "updateId": 289, "cookTime": 7}
+{"orderId": 100, "status": "COOKING", "updateId": 289, "cookTime": 7}
+{"orderId": 101, "status": "NEW", "updateId":289, "amount": 13}
+{"orderId": 100, "status": "DELIVERING", "updateId": 294}
+{"orderId": 102, "status": "NEW", "updateId":291, "amount": 17}
+{"orderId": 101, "status": "CANCELED", "updateId":290}
