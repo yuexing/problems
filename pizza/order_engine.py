@@ -136,15 +136,17 @@ class OrderEngine:
        doc
     """
     class Order:
+        """
+        Encapsulate the order, including current status, amount, orderId and
+        all valid updateIds. Also the lastUpdateId is recorded to guarantee
+        total order.
+        """
         def __init__(self, orderId, updateId, amount):
             self.status = Status.new()
             self.amount = amount
             self.orderId = orderId
             self.lastUpdateId = updateId
             self.updateIds = set([updateId])
-
-        def getNext(self):
-            return self.status + 1;
 
         def addUpdate(self, updateId):
             self.updateIds.add(updateId)
@@ -204,7 +206,7 @@ class OrderEngine:
         for k, v in summary.iteritems():
             print Status.asString(k).title(), ": ", v
 
-        print "Table Amount Charged: ", total
+        print "Total Amount Charged: ", total
 
 if __name__ == '__main__':
     Status.init();

@@ -30,8 +30,9 @@ Amount Charged.
 # Implementation:
 
 - class Status:
-    - map btw human-readable valid status to numbered status, see init()
-    - identify whether an old status can transfer to a new one, see
+    - map btw human-readable status to numbered status, see init() and
+      asString()
+    - determine whether an old status can transfer to a new one, see
       isTransferrable()
     - help functions about special status and special properties
 
