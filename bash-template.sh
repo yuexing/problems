@@ -78,4 +78,8 @@ END
 while read app path; do
 done < temp
 
+# loop through numbers
+for i in $(seq 1 5); do echo $i; done
+
+for i in {1..5}; do echo $i; done
 # run || FAILED="FAILED $app"
