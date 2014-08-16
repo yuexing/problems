@@ -2,6 +2,7 @@
 
 import fileinput
 import json
+import sys
 
 class Status:
     """
@@ -84,7 +85,7 @@ class OrderParser:
 
     def Err(self, no, e):
         if(self.reportErr):
-            print "ParseError in line ", no, ": ", e
+            print >> sys.stderr, "ParseError in line ", no, ": ", e
 
     def parseOrder(self, no, s):
         """
@@ -130,30 +131,28 @@ class OrderParser:
 class OrderEngine:
     """
      process orders according to the business rules:
-     - Each update identified by (orderId, updateId) is recognized only once and
-       the updateId is increasing
+     - Each update identified by (orderId, updateId) is recognized only once
+       since the updateId for an orderId is increasing.
      - For an order identified by orderId, its status transfers as specified in the
        doc
     """
     class Order:
         """
         Encapsulate the order, including current status, amount, orderId and
-        all valid updateIds. Also the lastUpdateId is recorded to guarantee
-        total order.
+        lastUpdateId. NB: lastUpdateId guarantees total order, which implies
+        unique.
         """
         def __init__(self, orderId, updateId, amount):
             self.status = Status.new()
             self.amount = amount
             self.orderId = orderId
             self.lastUpdateId = updateId
-            self.updateIds = set([updateId])
 
         def addUpdate(self, updateId):
-            self.updateIds.add(updateId)
             self.lastUpdateId = updateId
 
         def isValidUpdate(self, updateId):
-            return updateId not in self.updateIds and updateId > self.lastUpdateId
+            return updateId > self.lastUpdateId
 
 
     def __init__(self):

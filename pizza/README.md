@@ -15,7 +15,7 @@ Amount Charged.
 
 ### Order rules
 
-- for an order specified by orderId, it starts with NEW and the updateIds should 
+- for an order specified by orderId, its status starts with NEW and the updateIds should 
   be increasingly unique
 - Charged after NEW; CANCELED and REFUNDED will return the money
 
