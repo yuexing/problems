@@ -122,7 +122,106 @@ vector<int> get_topo(int **g, int n)
 
 // Now think about "Good Nodes"
 // dfs to record all the leaves and point the leaves to "Good Node"
+class graph_t
+{
+    struct edge_t {
+        int idx, weight;
 
-// Tarjan SCC to create DAG
+        edge_t(int idx, int weight)
+          : idx(idx),
+            weight(weight) {}
+    };
+
+    struct node_t{
+        int idx;
+        vector<edge_t> adjs;
+
+        node_t(int idx): idx(idx) {}
+
+        void add_adj(int d, int w) {
+            adjs.push_back(edge_t(d, w));
+        }
+    };
+
+    map<int, node_t> nodes;
+
+    void add_edge(int s, int d, int w) {
+        if(!contains(nodes, s)) {
+            nodes.insert(pair<int, node_t>(s, node_t(s)));
+        }
+        nodes[s].add_adj(d, w);
+    }
+
+    vector<int> get_adjs(int s) {
+        return vector<int>();
+    }
+
+    int dist(int s, int d) {
+        return nodes[s][d];
+    }
+
+    graph_t reversed_graph() {
+        graph_t ret;
+        foreach(i, nodes) {
+            node_t &n = i->second;
+            foreach(j, n->adjs) {
+                edge_t &e = *j;
+                ret.add_adj(e.idx, s, e.weight);
+            }
+        }
+        return ret;
+    }
+
+    int help_compute_scc(int v, 
+                         int &idx
+                         stack<int> &s, 
+                         stack<stack<int> > &dag,
+                         map<int, int> &sccs,
+                         map<int, int> &idxes) {
+        if(contains(sccs, v)) {
+            return sccs[v]; 
+        }
+
+        sccs[v] = idxes[v] = idx++;
+        s.push(v);
+        foreach(it, get_adjs(v)) {
+            sccs[v] = min(sccs[v], help_compute_scc(*it, idx, s, dag, sccs, idxes));
+        }
+
+        if(sccs[v] == idxes[v]) {
+            stack<int> sub;
+            while(!s.empty() && s.peek() != v){
+                sub.push(s.peek());
+                s.pop();
+            }
+            dag.push(sub);
+        }
+    }
+
+    // compute dag of sccs
+    void compute_scc() {
+
+        int idx = 0;
+        stack<int> scc_stack;
+        stack<stack<int> > dag;
+        map<int, int> sccs, idxes;
+        foreach(i, nodes) {
+            (void)help_compute_scc(i->first, idx, scc_stack, dag, sccs, idxes);
+        }
+
+        while(!dag.empty()) {
+            //
+        }
+    }
+    
+    vector<int> topo;
+    bool topoed;
+    vector<int> topo_sort() {
+        if(!topoed) {
+            compute_sccs();
+        }
+        return topo;
+    }
+};
 
 // bi-connected
