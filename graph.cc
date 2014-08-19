@@ -13,8 +13,9 @@ int get_dist(gnode_t* from, gnode_t* to);
 // each loop, relax the unvisited neighbors.
 // alternatively, we can relax on all neighbors, which is slow (but correct
 // for graph with negative edges) and subject to negative cycles.
-// Q: how to detect negative cycles?
-// record the # of times a node is pushed into the worklist.
+// Q: how to detect negative cycles? since we relax on its neighbors which is
+// no more than n, then if a node is pushed into the worklist for n times,
+// then there is a negative cycle.
 int djikstra(gnode_t* src, gnode_t* dest)
 {
     priority_queue<gnode_t*> worklist;
@@ -44,6 +45,8 @@ int djikstra(gnode_t* src, gnode_t* dest)
 
 // Bellman-Ford
 // slow-version of Djikstra.
+// NB: it also help calculate src to all-point shortest path.
+// The one-sink is just to initialize differently.
 int bellmanFord(int **dists, int n, int m, int src, int dest)
 {
     int **mem = new int*[m];
@@ -56,6 +59,8 @@ int bellmanFord(int **dists, int n, int m, int src, int dest)
 
     // run
     for(int i = 1; i <= m; ++i) {
+
+        // Instead of this, we can iterate all the edges directly.
         for(int j = 0; j < n; ++j) {
             // look at all the adjacent
             int min = INT_MAX;
@@ -85,13 +90,39 @@ void floyd(int **dists, int n, int **res)
         for(int i = 0; i < n; ++i) {
             for(int j = 0; j < n; ++j) {
                 // need a copy?
-                // NO!
+                // NO! since the intermediate node is k.
                 res[i][j] = min(res[i][k] + res[k][j], res[i][j]);
             }
         }
     }
 }
 
-// Tarjan SCC
+// in a DAG, directly acyclic graph. Such a graph has a topological order.
+// dfs, but push to stack *after* its children
+void help_get_topo(int v, int **g, int n, stack<int> &s, set<int> &visited)
+{
+}
 
-// build Line-graph
+vector<int> get_topo(int **g, int n)
+{
+    vector<int> ret;
+    {
+        set<int> visited;
+        stack<int> s;
+        for(int i = 0; i < n; ++i) {
+            help_get_topo(v, g, n, s, visited);
+        } 
+        while(!s.empty()) {
+            ret.push_back(s.peek());
+            s.pop();
+        }
+    }
+    return ret;
+}
+
+// Now think about "Good Nodes"
+// dfs to record all the leaves and point the leaves to "Good Node"
+
+// Tarjan SCC to create DAG
+
+// bi-connected

@@ -1,1 +1,0 @@
-COMPILER_FILES+=$(COMPILER_LIB_DIR)/libunwind.a
