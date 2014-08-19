@@ -51,6 +51,7 @@ class OrderParserTestCase(unittest.TestCase):
         self.assertTrue(OrderParser.isNonnegInt(5));
         self.assertTrue(not OrderParser.isNonnegInt(-1))
         self.assertTrue(not OrderParser.isNonnegInt("5"))
+        self.assertTrue(not OrderParser.isNonnegInt(5.0));
 
     def testParseOrder(self):
         # invalid json

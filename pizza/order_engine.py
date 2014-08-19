@@ -77,11 +77,7 @@ class OrderParser:
 
     @staticmethod
     def isNonnegInt(i):
-        try:
-            j = i + 1;
-        except TypeError:
-            return False;
-        return i >= 0;
+        return type(i) is int and i >= 0;
 
     def Err(self, no, e):
         if(self.reportErr):
