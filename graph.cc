@@ -120,8 +120,6 @@ vector<int> get_topo(int **g, int n)
     return ret;
 }
 
-// Now think about "Good Nodes"
-// dfs to record all the leaves and point the leaves to "Good Node"
 class graph_t
 {
     struct edge_t {
@@ -221,6 +219,44 @@ class graph_t
             compute_sccs();
         }
         return topo;
+    }
+
+    // compute biconnected component, which is to find the articulation point.
+    // compared to propagating sccs, always taking the min(sccs) to get the
+    // biggest circle;
+    // it propagates a lowpt in tree edge, when back-edge, it takes min(num,
+    // lowpt).
+    int help_compute_bcc(int v, 
+                         int &idx,
+                         stack<int> s,
+                         map<int,int> bcces,
+                         map<int,int> idxes)
+    {
+        lowpts[v] = bccs[v] = idx++;
+        s.push(v);
+
+        foreach(n, get_adjs(v)) {
+            // tree edge
+            if(!contains(idxes, n)) {
+                lowpts[v] = min(lowpts[v], help_compute_bcc(v, idx, s, bccs, idxes));
+            } else {
+                // back edge
+                lowpts[v] = min(lowpts[v], idxes[n]);
+            }
+        }
+
+        if(lowpts[v] == bccs[v]) {
+            // pop out the biconnected component
+        }
+    }
+
+    void compute_bcc() {
+        int idx = 0;
+        stack<int> bcc_stack;
+        map<int, int> bccs, idxes;
+        foreach(i, nodes) {
+            (void)help_compute_bcc(i->first, idx, bcc_stack, bccs, idxes);
+        }
     }
 };
 
