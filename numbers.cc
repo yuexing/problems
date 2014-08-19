@@ -19,6 +19,31 @@ bool testPrime(int n)
     return true;
 }
 
+// factoring is hard, which is exponential. But testing prime is easy.
+// Fermat's little therom: (i*a)%p -> will map to differnt [1...p-1]
+// *(i*a) = (p-1)!*a^p-1 = (p-1)!, thus a^p-1 = 1 %p
+int exp(int x, int y, int m)
+{
+    int res = 1;
+    while(y) {
+        if(y % 2) {
+            res *= x;
+        }
+        x *= x;
+        x %= m;
+        y >>= 1;
+    }
+}
+
+bool testPrime1(int n)
+{
+    // for k times
+    if(exp(rand(), n) != 1) {
+        return false
+    }
+    return true;
+}
+
 // find as many primes as up to n
 void getPrimes(int n, vector<int> primes)
 {
@@ -320,3 +345,11 @@ int find_most_overlapping(vector<interval> is)
     }
     return max;
 }
+
+// given <num, #-of-higher-before-it>, reconstruct the array.
+
+
+// given an array, output all reversed pairs. The reversed pairs is defined as
+// <i, j> is placed in sorted array, but <j, i> is in current array. 
+// given <num, #-of-reversed-pairs>, reconstruct the array.  Basically means 
+// the same thing as the above question.
