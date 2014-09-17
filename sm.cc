@@ -55,6 +55,22 @@ class sm_t
     void handle(const node_t *n, state_t *s);
 };
 
+// manipulate statistics
+class stat_user_t
+{
+    // store the stat about a function
+    void storeStat();
+    // aggregate the stat from all functions together
+    void computeInferredStat();
+    // use the stat
+    void getStat();
+};
+
+struct stat_sm_t : public sm_t
+{
+    stat_user_t stat_user;
+}
+
 struct composed_nsm_t : public sm_t
 {
     void add(sm_t *);
@@ -74,6 +90,7 @@ class abstract_interp
         bool first_time = true;
         state_t *state = nsm.create_empty_state();
         cache_t *cache = state->create_empty_cache();
+        // state/cache are cloned on each branch
         while(n) {
            nsm.handle(n, state); 
            n = n->next;
