@@ -83,3 +83,8 @@ for i in $(seq 1 5); do echo $i; done
 
 for i in {1..5}; do echo $i; done
 # run || FAILED="FAILED $app"
+
+# string substitution
+a="string.txt.bak"; 
+echo '${a%.*}' ${a%.*}; # string.txt
+echo '${a%%.*}' ${a%%.*} # string
