@@ -1,63 +1,79 @@
-#ifndef _CONTAINER_HPP
-#define _CONTAINER_HPP
+#ifndef _CONTAINER_UTIL_HPP
+#define _CONTAINER_UTIL_HPP
 
-#include <vector>
-#include <list>
 #include <map>
-#include <set>
-#include <queue>
-#include <stack>
-#include <string>
-#include <algorithm>
-using namespace std;
+#include <vector>
+#include <iostream>
 
+/// avoid long type declaration
 #define LET(a, b) \
   typeof(b) a(b)
 
+/// foreach util
 #define foreach(it, c) \
   for(LET(it, (c).begin()); it != (c).end(); ++it)
 
 #define reverse_foreach(it, c) \
   for(LET(it, (c).end()); it-- != (c).begin(); ++it)
 
+/// general
 template<typename C, typename K>
 inline bool contains(C c, K k)
 {
-    return c.find(k) != c.end();
+  return c.find(k) != c.end();
 }
 
-// what is desired here?
-struct array_wrapper
-{
-};
-
-#define NO_OBJ_COPIES(type)     \
-  private:                      \
-    type(const type&);          \
-    type &operator&(const type&);\
-
+/// print containers
+/// usage: ostream << printable_container(c);
 template<typename C>
 struct printable_container_t
 {
-    printable_container_t(const C& c, char sep=',')
-      : c(&c) {}
+  const C& c;
+  char seperator;
 
-    void print(ostream &os) {
+  printable_container_t(const C& c, char seperator)
+    : c(c), seperator(seperator)
+  {}
+
+  virtual void print(std::ostream &os) const {
+    foreach(it, c) {
+      os << *it << seperator;
     }
-private:
-    const C *c;
-    char sep;
+  }
 };
 
+template<typename K, typename V>
+struct printable_container_t<std::map<K,V> > {
+
+  const std::map<K,V> c;
+  char seperator;
+
+  printable_container_t(const std::map<K, V>& c, char seperator)
+    : c(c), seperator(seperator)
+  {}
+
+  void print(std::ostream &os) const
+  {
+    foreach(it, c) {
+      os << "("<< it->first << "," << it->second << ")" << seperator;
+    }
+  }
+};
+
+
 template<typename C>
-printable_container_t<C> printable_container(C c)
+inline std::ostream& operator<<(std::ostream &os, 
+    const printable_container_t<C> &pc)
 {
-    return printable_container_t(c);
+  pc.print(os);
+  return os;
 }
 
-ostream &operator<<(ostream os, const printable_container_t &p)
+template<typename C>
+inline printable_container_t<C> printable_container(const C& c,
+    char seperator = ',')
 {
-    p.print(os);
+  return printable_container_t<C>(c, seperator);
 }
 
 #endif
