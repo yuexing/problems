@@ -1,0 +1,12 @@
+usage:
+* g++ -o poker poker.cpp
+* ./poker
+* use ctrl-d(eof) to exit
+
+error-handling:
+* on user input error, force to re-enter
+
+features:
+* error-check
+  * user-input, including the maximum players can play the game
+* o-o design
