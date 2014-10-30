@@ -26,7 +26,22 @@ static void select_cards(poker_card_t cards[], int size, set<int>& used_cards)
       propose = rand() % 52 ;
     }
     cards[i] = poker_card_t(propose);
+    used_cards.insert(propose);
     cout << "\t" << i << ": " << cards[i] << endl;
+  }
+}
+
+template<typename T>
+static void select_cards(T cards, int round, int players, set<int>& used_cards)
+{
+  for(int i = 0; i < players; ++i) {
+    int propose = rand() % 52 ;
+    while(contains(used_cards, propose)) {
+      propose = rand() % 52 ;
+    }
+    cards[i][round] = poker_card_t(propose);
+    used_cards.insert(propose);
+    cout << "\t" << i << ": " << cards[i][round] << endl;
   }
 }
 
@@ -81,7 +96,7 @@ bool blackjack_t::can_play()
 bool blackjack_t::deal()
 {
   cout << "Round " << round << ":" << endl;
-  select_cards(m_cards[round], 2, used_cards);
+  select_cards(m_cards, round, m_players, used_cards);
   return ++round < 2; 
 }
 
@@ -109,7 +124,7 @@ bool poker_stud_t::can_play()
 bool poker_stud_t::deal()
 {
   cout << "Round " << round << ":" << endl;
-  select_cards(m_cards[round], 7, used_cards);
+  select_cards(m_cards, round, m_players, used_cards);
   return ++round < 7; 
 }
 
@@ -145,7 +160,7 @@ bool poker_texas_t::deal()
     select_cards(m_community_cards, 5, used_cards);
   }
   cout << "Round " << round << ":" << endl;
-  select_cards(m_cards[round], 2, used_cards);
+  select_cards(m_cards, round, m_players, used_cards);
   return ++round < 2; 
 }
 

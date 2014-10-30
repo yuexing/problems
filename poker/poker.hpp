@@ -12,7 +12,7 @@ public:
   friend std::ostream& operator<<(std::ostream& os, const poker_card_t& card);
 
   poker_card_t()
-    : m_num() {}
+    : m_num(-1) {}
   poker_card_t(int num)
     : m_num(num) {}
 private:
