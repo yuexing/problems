@@ -48,6 +48,7 @@ class blackjack_t : public poker_game_t
 {
 public:
   blackjack_t(int players);
+  virtual ~blackjack_t();
 protected:
   bool deal();
   bool can_play();
@@ -62,6 +63,7 @@ class poker_stud_t : public poker_game_t
 {
 public:
   poker_stud_t(int players);
+  virtual ~poker_stud_t();
 protected:
   bool deal();
   bool can_play();
@@ -76,6 +78,7 @@ class poker_texas_t : public poker_game_t
 {
 public:
     poker_texas_t(int players);
+    virtual ~poker_texas_t();
 protected:
   bool deal();
   bool can_play();

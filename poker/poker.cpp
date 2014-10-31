@@ -81,6 +81,11 @@ void poker_game_t::start()
   output_cards();
 }
 
+blackjack_t::~blackjack_t()
+{
+  delete[] m_cards;
+}
+
 blackjack_t::blackjack_t(int players)
   : poker_game_t(players),
     round(0)
@@ -107,6 +112,11 @@ void blackjack_t::output_cards()
     cout << i << ": " << endl;
     cout << "\t" << m_cards[i][0] << ", " << m_cards[i][1] << endl;
   }
+}
+
+poker_stud_t::~poker_stud_t()
+{
+  delete[] m_cards;
 }
 
 poker_stud_t::poker_stud_t(int players)
@@ -139,6 +149,11 @@ void poker_stud_t::output_cards()
     }
     cout << endl;
   }
+}
+
+poker_texas_t::~poker_texas_t()
+{
+  delete[] m_cards;
 }
 
 poker_texas_t::poker_texas_t(int players)
