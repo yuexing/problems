@@ -1,3 +1,0 @@
-$ make
-$ ./obj/bin/words foo.txt
-$ ./obj/bin/words wordsforproblem.txt
