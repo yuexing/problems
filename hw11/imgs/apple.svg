@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="72px" height="72px" viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3 (11970) - http://www.bohemiancoding.com/sketch -->
+    <title>itunes-store</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="1" sketch:type="MSArtboardGroup" transform="translate(-104.000000, -300.000000)">
+            <g id="itunes-store" sketch:type="MSLayerGroup" transform="translate(104.000000, 300.000000)">
+                <rect id="Rectangle-2" fill="#999999" sketch:type="MSShapeGroup" x="0" y="0" width="72" height="72" rx="4"></rect>
+                <path d="M38.518282,14.1770706 C41.6615255,10.020344 46.0314638,10 46.0314638,10 C46.0314638,10 46.6813944,13.9081036 43.5588198,17.6728528 C40.2246052,21.6927697 36.4348105,21.0349794 36.4348105,21.0349794 C36.4348105,21.0349794 35.7231876,17.8734544 38.518282,14.1770706 Z M36.8345924,23.7726706 C38.4517172,23.7726706 41.4527932,21.5423974 45.3592139,21.5423974 C52.0834413,21.5423974 54.7287452,26.3431938 54.7287452,26.3431938 C54.7287452,26.3431938 49.5549992,28.9973009 49.5549992,35.4372898 C49.5549992,42.7023158 56,45.2059718 56,45.2059718 C56,45.2059718 51.4946529,57.9295056 45.4092751,57.9295056 C42.6141807,57.9295056 40.4412749,56.0395611 37.4963114,56.0395611 C34.4952353,56.0395611 31.51695,58 29.5772963,58 C24.0203505,58 17,45.9305504 17,36.2287356 C17,26.6833648 22.9422674,21.6760529 28.515874,21.6760529 C32.1390601,21.6761317 34.950894,23.7726706 36.8345924,23.7726706 Z" id="Shape" fill="#FFFFFF" sketch:type="MSShapeGroup"></path>
+            </g>
+        </g>
+    </g>
+</svg>
