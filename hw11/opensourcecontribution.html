@@ -1,0 +1,276 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <link type="text/css" rel="stylesheet" href="css/normalize.css" />
+    <link type="text/css" rel="stylesheet" href="css/style.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <h1>What Tech Giants Contribute to Open source?</h1>
+        <h2>Compare the open source contributions of 5 tech giants over the last 5 years.</h2>
+        <h3>Filter Projects by Programming Language</h3>
+        <nav id="filter">
+            <li><a href="#">C/C++</a></li>
+            <li><a href="#">Java</a></li>
+            <li><a href="#">Javascript</a></li>
+            <li><a href="#">Python</a></li>
+        </nav>
+        <div class="graph"></div>
+    </div>
+    <script type="text/javascript">
+    (function() {
+
+        var nav = document.getElementById("filter");
+        var lis = document.getElementsByTagName("li");
+        var colors = ['#000', '#000', '#000', '#000'];
+        for(var i = 0; i < lis.length; ++i) {
+            var a = lis[i].getElementsByTagName('a')[0];
+            a.addEventListener('click', function(e) {
+                alert("Filter is not ready, please wait...");
+                e.preventDefault(); // so that disable default
+                return false;       // so that disable default in IE
+            }, /*useCapture*/false);
+            a.setAttribute('style', 'color:' + colors[i]);
+        }
+
+    var margin = {
+            top: 50,
+            right: 200,
+            bottom: 20,
+            left: 20
+        },
+        width = 900,
+        height = 350;
+
+    var start_year = 2010,
+        end_year = 2015;
+
+    var c = d3.scale.category20c();
+
+    var x = d3.scale.linear()
+        .range([0, width]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("top");
+
+    var formatYears = d3.format("0000");
+    xAxis.tickFormat(formatYears);
+
+    var svg = d3.select(".graph").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .style("margin-left", margin.left + "px")
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+    function process(data) {
+        x.domain([start_year, end_year]);
+        var xScale = d3.scale.linear()
+            .domain([start_year, end_year])
+            .range([0, width]);
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        for (var j = 0; j < data.length; j++) {
+            var g = svg.append("g").attr("class", "journal");
+
+            var circles = g.selectAll("circle")
+                .data(data[j]['articles'])
+                .enter()
+                .append("circle");
+
+            var text = g.selectAll("text")
+                .data(data[j]['articles'])
+                .enter()
+                .append("text");
+
+            var rScale = d3.scale.linear()
+                .domain([0, d3.max(data[j]['articles'], function(d) {
+                    return d[1];
+                })])
+                .range([2, 9]);
+
+            circles
+                .attr("cx", function(d, i) {
+                    return xScale(d[0]);
+                })
+                .attr("cy", j * 70 + 20)
+                .attr("r", function(d) {
+                    return rScale(d[1]);
+                })
+                .style("fill", function(d) {
+                    return c(j);
+                });
+
+            text
+                .attr("y", j * 70 + 25)
+                .attr("x", function(d, i) {
+                    return xScale(d[0]) - 5;
+                })
+                .attr("class", "value")
+                .text(function(d) {
+                    return d[1];
+                })
+                .style("fill", function(d) {
+                    return c(j);
+                })
+                .style("display", "none");
+
+            g.append("svg:image")
+                .attr("y", j * 70 + 10)
+                .attr("x", width + 50)
+                .attr('width', 60)
+                .attr('height', 30)
+                .attr("class", "label")
+                .attr("xlink:href", data[j]['name']);
+        };
+
+        /*function mouseover(p) {
+            var g = d3.select(this).node().parentNode;
+            d3.select(g).selectAll("circle").style("display", "none");
+            d3.select(g).selectAll("text.value").style("display", "block");
+        }
+
+        function mouseout(p) {
+            var g = d3.select(this).node().parentNode;
+            d3.select(g).selectAll("circle").style("display", "block");
+            d3.select(g).selectAll("text.value").style("display", "none");
+        }*/
+    }
+
+    data = [{
+            "articles": [
+                [2010.0, 50],
+                [2010.2, 50],
+                [2010.8, 50],
+                [2010.9, 50],
+                [2011.1, 50],
+                [2011.7, 50],
+                [2012.1, 50],
+                [2012.4, 50],
+                [2012.5, 50],
+                [2012.6, 50],
+                [2012.9, 50],
+                [2013.1, 50],
+                [2013.2, 50],
+                [2013.3, 50],
+                [2013.5, 50],
+                [2013.6, 50],
+                [2013.8, 50],
+                [2013.9, 50],
+                [2014.1, 50],
+                [2014.2, 50],
+                [2014.3, 50],
+                [2014.4, 50],
+                [2014.5, 50],
+                [2014.6, 50],
+                [2014.7, 50],
+                [2014.8, 50],
+                [2014.9, 50],
+                [2014.1, 50],
+            ],
+            "name": "logo.png"
+        },
+
+        {
+            "articles": [
+                [2012.6, 50],
+                [2013.1, 50],
+                [2013.5, 50],
+                [2013.7, 50],
+                [2014.1, 50],
+                [2014.4, 50],
+                [2014.6, 50],
+                [2014.8, 50],
+                [2014.9, 50]
+
+            ],
+            "name": "logo.png"
+        },
+
+        {
+            "articles": [
+                [2011.1, 50],
+                [2011.5, 50],
+                [2011.7, 50],
+                [2012.1, 50],
+                [2012.4, 50],
+                [2012.5, 50],
+                [2012.9, 50],
+                [2013.2, 50],
+                [2013.5, 50],
+                [2013.6, 50],
+                [2013.8, 50],
+                [2013.9, 50],
+                [2014.2, 50],
+                [2014.3, 50],
+                [2014.5, 50],
+                [2014.6, 50],
+                [2014.8, 50],
+                [2014.9, 50],
+            ],
+            "name": "logo.png"
+        },
+
+        {
+            "articles": [
+                [2011.7, 50],
+                [2012.2, 50],
+                [2012.6, 50],
+                [2012.9, 50],
+                [2013.1, 50],
+                [2013.3, 50],
+                [2013.5, 50],
+                [2013.6, 50],
+                [2013.8, 50],
+                [2013.9, 50],
+                [2014.2, 50],
+                [2014.4, 50],
+                [2014.5, 50],
+                [2014.6, 50],
+                [2014.7, 50],
+                [2014.8, 50],
+                [2014.9, 50],
+            ],
+            "name": "logo.png"
+        },
+
+        {
+            "articles": [
+                [2010.5, 50],
+                [2011.2, 50],
+                [2011.6, 50],
+                [2011.9, 50],
+                [2012.5, 50],
+                [2012.8, 50],
+                [2013.5, 50],
+                [2013.6, 50],
+                [2013.8, 50],
+                [2013.9, 50],
+                [2014.2, 50],
+                [2014.4, 50],
+                [2014.5, 50],
+                [2014.6, 50],
+                [2014.7, 50],
+                [2014.9, 50],
+            ],
+            "name": "logo.png"
+        }
+    ];
+
+    process(data);
+} )();
+    </script>
+</body>
+
+</html>

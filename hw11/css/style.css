@@ -1,0 +1,60 @@
+  @import url(http://fonts.googleapis.com/css?family=Exo);
+  body {
+      font-family: 'Exo', Arial, sans-serif;
+      font-size: 14px;
+  }
+
+  /*******layout********/
+  .wrapper{
+    width: 960px;
+    margin: auto;
+  }
+
+  /*nav*/
+  nav li{
+    list-style: none;
+    display: inline-block;
+    padding: 10px;
+  }
+
+
+  
+  h1,
+  h2 {
+      font-family: 'Exo', Arial, sans-serif;
+  }
+
+  h1{
+    font-size: 200%;
+  }
+
+  h2{
+    font-size: 150%;
+  }
+  
+  .axis path,
+  .axis line {
+      fill: none;
+      stroke: #b6b6b6;
+      shape-rendering: crispEdges;
+  }
+  /*.tick line{fill:none;stroke:none;}*/
+  
+  .tick text {
+      fill: #999;
+  }
+  
+  g.journal.active {
+      cursor: pointer;
+  }
+  
+  text.label {
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+  }
+  
+  text.value {
+      font-size: 12px;
+      font-weight: bold;
+  }
