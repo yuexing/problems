@@ -13,28 +13,37 @@
     <div class="wrapper">
         <h1>What Tech Giants Contribute to Open source?</h1>
         <h2>Compare the open source contributions of 5 tech giants over the last 5 years.</h2>
-        <p>It might surprise you just how often large companies give away their code to the open source community. At that point, anyone can contribute, debug, or download the code from a repository on GitHub and then use it for themselves. 
-        Let us take a look at those open source projects initiated by these giant tech companies.</p>
+        <p>It might surprise you just how often large companies give away their code to the open source community. At that point, anyone can contribute, debug, or download the code from a repository on GitHub and then use it for themselves. Let us take a look at those open source projects initiated by these giant tech companies.</p>
         <h3>Filter Projects by Programming Language</h3>
         <nav id="filter">
-            <li><a href="#">Javascript</a></li>
-            <li><a href="#">Python</a></li>
-            <li><a href="#">Ruby</a></li>
-            <li><a href="#">Java</a></li>
-            <li><a href="#">C/C++</a></li>
-            <li><a href="#">PHP</a></li>
-            <li><a href="#">Objective-C</a></li>
-            <li><a href="#">Go</a></li>
-            <li><a href="#">Others</a></li>
+            <li><a href="#">TBD</a></li>
+            <li><a href="#">TBD</a></li>
+            <li><a href="#">TBD</a></li>
+            <li><a href="#">TBD</a></li>
+            <li><a href="#">TBD</a></li>
+            <li><a href="#">TBD</a></li>
+            <li><a href="#">TBD</a></li>
+            <li><a href="#">TBD</a></li>
+            <li><a href="#">TBD</a></li>
         </nav>
         <div class="graph"></div>
     </div>
     <script type="text/javascript">
     (function() {
+        var langs = ['Javascript', 'Python', 'Ruby', 'Java', 'C/C++', 'PHP', 'Objective-C', 'Go', 'Others'];
+        var colors = ['#D0021B', '#8AC2BD', '#DBAFC7', '#EAB669', '#FD94F6', '#C9C890', '#FEC542', '#7598F8', '#9E9790'];
+        var color_map = (function() {
+            var ret = {};
+            for (var i = 0; i < langs.length; ++i) {
+                ret[langs[i]] = colors[i];
+            }
+            return ret;
+        })();
 
         var nav = document.getElementById("filter");
         var lis = document.getElementsByTagName("li");
-        var colors = ['#D0021B', '#8AC2BD', '#DBAFC7', '#EAB669', '#FD94F6', '#C9C890', '#FEC542', '#7598F8', '#9E9790'];
+
+
         for (var i = 0; i < lis.length; ++i) {
             var a = lis[i].getElementsByTagName('a')[0];
             a.addEventListener('click', function(e) {
@@ -42,6 +51,7 @@
                 e.preventDefault(); // so that disable default
                 return false; // so that disable default in IE
             }, /*useCapture*/ false);
+            a.innerHTML = langs[i];
             a.setAttribute('style', 'color:' + colors[i]);
         }
 
@@ -116,7 +126,7 @@
                         return rScale(d[1]);
                     })
                     .style("fill", function(d) {
-                        return c(j);
+                        return color_map[d[2]];
                     });
 
                 text
@@ -129,7 +139,7 @@
                         return d[1];
                     })
                     .style("fill", function(d) {
-                        return c(j);
+                        return color_map[d[2]];
                     })
                     .style("display", "none");
 
@@ -157,49 +167,49 @@
 
         data = [{
                 "articles": [
-                    [2010.0, 50],
-                    [2010.2, 50],
-                    [2010.8, 50],
-                    [2010.9, 50],
-                    [2011.1, 50],
-                    [2011.7, 50],
-                    [2012.1, 50],
-                    [2012.4, 50],
-                    [2012.5, 50],
-                    [2012.6, 50],
-                    [2012.9, 50],
-                    [2013.1, 50],
-                    [2013.2, 50],
-                    [2013.3, 50],
-                    [2013.5, 50],
-                    [2013.6, 50],
-                    [2013.8, 50],
-                    [2013.9, 50],
-                    [2014.1, 50],
-                    [2014.2, 50],
-                    [2014.3, 50],
-                    [2014.4, 50],
-                    [2014.5, 50],
-                    [2014.6, 50],
-                    [2014.7, 50],
-                    [2014.8, 50],
-                    [2014.9, 50],
-                    [2014.1, 50],
+                    [2010.0, 50, 'Javascript'],
+                    [2010.2, 50, 'Java'],
+                    [2010.8, 50, 'Javascript'],
+                    [2010.9, 50, 'Javascript'],
+                    [2011.1, 50, 'Java'],
+                    [2011.7, 50, 'Javascript'],
+                    [2012.1, 50, 'Javascript'],
+                    [2012.4, 50, 'Javascript'],
+                    [2012.5, 50, 'Javascript'],
+                    [2012.6, 50, 'C/C++'],
+                    [2012.9, 50, 'C/C++'],
+                    [2013.1, 50, 'Python'],
+                    [2013.2, 50, 'Python'],
+                    [2013.3, 50, 'Python'],
+                    [2013.5, 50, 'Python'],
+                    [2013.6, 50, 'Python'],
+                    [2013.8, 50, 'Python'],
+                    [2013.9, 50, 'Python'],
+                    [2014.1, 50, 'Python'],
+                    [2014.2, 50, 'Python'],
+                    [2014.3, 50, 'Python'],
+                    [2014.4, 50, 'Python'],
+                    [2014.5, 50, 'Python'],
+                    [2014.6, 50, 'Python'],
+                    [2014.7, 50, 'Python'],
+                    [2014.8, 50, 'Python'],
+                    [2014.9, 50, 'Python'],
+                    [2014.1, 50, 'Python'],
                 ],
                 "name": "imgs/google.svg"
             },
 
             {
                 "articles": [
-                    [2012.6, 50],
-                    [2013.1, 50],
-                    [2013.5, 50],
-                    [2013.7, 50],
-                    [2014.1, 50],
-                    [2014.4, 50],
-                    [2014.6, 50],
-                    [2014.8, 50],
-                    [2014.9, 50]
+                    [2012.6, 50, 'Python'],
+                    [2013.1, 50, 'Python'],
+                    [2013.5, 50, 'Python'],
+                    [2013.7, 50, 'Python'],
+                    [2014.1, 50, 'Python'],
+                    [2014.4, 50, 'Python'],
+                    [2014.6, 50, 'Python'],
+                    [2014.8, 50, 'Python'],
+                    [2014.9, 50, 'Python']
 
                 ],
                 "name": "imgs/apple.svg"
@@ -207,69 +217,69 @@
 
             {
                 "articles": [
-                    [2011.1, 50],
-                    [2011.5, 50],
-                    [2011.7, 50],
-                    [2012.1, 50],
-                    [2012.4, 50],
-                    [2012.5, 50],
-                    [2012.9, 50],
-                    [2013.2, 50],
-                    [2013.5, 50],
-                    [2013.6, 50],
-                    [2013.8, 50],
-                    [2013.9, 50],
-                    [2014.2, 50],
-                    [2014.3, 50],
-                    [2014.5, 50],
-                    [2014.6, 50],
-                    [2014.8, 50],
-                    [2014.9, 50],
+                    [2011.1, 50, 'Python'],
+                    [2011.5, 50, 'Python'],
+                    [2011.7, 50, 'Python'],
+                    [2012.1, 50, 'Python'],
+                    [2012.4, 50, 'Python'],
+                    [2012.5, 50, 'Python'],
+                    [2012.9, 50, 'Python'],
+                    [2013.2, 50, 'Python'],
+                    [2013.5, 50, 'Python'],
+                    [2013.6, 50, 'Python'],
+                    [2013.8, 50, 'Python'],
+                    [2013.9, 50, 'Python'],
+                    [2014.2, 50, 'Python'],
+                    [2014.3, 50, 'Python'],
+                    [2014.5, 50, 'Python'],
+                    [2014.6, 50, 'Python'],
+                    [2014.8, 50, 'Python'],
+                    [2014.9, 50, 'Python'],
                 ],
                 "name": "imgs/twitter.svg"
             },
 
             {
                 "articles": [
-                    [2011.7, 50],
-                    [2012.2, 50],
-                    [2012.6, 50],
-                    [2012.9, 50],
-                    [2013.1, 50],
-                    [2013.3, 50],
-                    [2013.5, 50],
-                    [2013.6, 50],
-                    [2013.8, 50],
-                    [2013.9, 50],
-                    [2014.2, 50],
-                    [2014.4, 50],
-                    [2014.5, 50],
-                    [2014.6, 50],
-                    [2014.7, 50],
-                    [2014.8, 50],
-                    [2014.9, 50],
+                    [2011.7, 50, 'Python'],
+                    [2012.2, 50, 'Python'],
+                    [2012.6, 50, 'Python'],
+                    [2012.9, 50, 'Python'],
+                    [2013.1, 50, 'Python'],
+                    [2013.3, 50, 'Python'],
+                    [2013.5, 50, 'Python'],
+                    [2013.6, 50, 'Python'],
+                    [2013.8, 50, 'Python'],
+                    [2013.9, 50, 'Python'],
+                    [2014.2, 50, 'Python'],
+                    [2014.4, 50, 'Python'],
+                    [2014.5, 50, 'Python'],
+                    [2014.6, 50, 'Python'],
+                    [2014.7, 50, 'Python'],
+                    [2014.8, 50, 'Python'],
+                    [2014.9, 50, 'Python'],
                 ],
                 "name": "imgs/facebook.svg"
             },
 
             {
                 "articles": [
-                    [2010.5, 50],
-                    [2011.2, 50],
-                    [2011.6, 50],
-                    [2011.9, 50],
-                    [2012.5, 50],
-                    [2012.8, 50],
-                    [2013.5, 50],
-                    [2013.6, 50],
-                    [2013.8, 50],
-                    [2013.9, 50],
-                    [2014.2, 50],
-                    [2014.4, 50],
-                    [2014.5, 50],
-                    [2014.6, 50],
-                    [2014.7, 50],
-                    [2014.9, 50],
+                    [2010.5, 50, 'Python'],
+                    [2011.2, 50, 'Python'],
+                    [2011.6, 50, 'Python'],
+                    [2011.9, 50, 'Python'],
+                    [2012.5, 50, 'Python'],
+                    [2012.8, 50, 'Python'],
+                    [2013.5, 50, 'Python'],
+                    [2013.6, 50, 'Python'],
+                    [2013.8, 50, 'Python'],
+                    [2013.9, 50, 'Python'],
+                    [2014.2, 50, 'Python'],
+                    [2014.4, 50, 'Python'],
+                    [2014.5, 50, 'Python'],
+                    [2014.6, 50, 'Python'],
+                    [2014.7, 50, 'Python'],
+                    [2014.9, 50, 'Python'],
                 ],
                 "name": "imgs/linkedin.svg"
             }
