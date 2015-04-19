@@ -13,12 +13,19 @@
     <div class="wrapper">
         <h1>What Tech Giants Contribute to Open source?</h1>
         <h2>Compare the open source contributions of 5 tech giants over the last 5 years.</h2>
+        <p>It might surprise you just how often large companies give away their code to the open source community. At that point, anyone can contribute, debug, or download the code from a repository on GitHub and then use it for themselves. 
+        Let us take a look at those open source projects initiated by these giant tech companies.</p>
         <h3>Filter Projects by Programming Language</h3>
         <nav id="filter">
-            <li><a href="#">C/C++</a></li>
-            <li><a href="#">Java</a></li>
             <li><a href="#">Javascript</a></li>
             <li><a href="#">Python</a></li>
+            <li><a href="#">Ruby</a></li>
+            <li><a href="#">Java</a></li>
+            <li><a href="#">C/C++</a></li>
+            <li><a href="#">PHP</a></li>
+            <li><a href="#">Objective-C</a></li>
+            <li><a href="#">Go</a></li>
+            <li><a href="#">Others</a></li>
         </nav>
         <div class="graph"></div>
     </div>
@@ -27,7 +34,7 @@
 
         var nav = document.getElementById("filter");
         var lis = document.getElementsByTagName("li");
-        var colors = ['#000', '#000', '#000', '#000'];
+        var colors = ['#D0021B', '#8AC2BD', '#DBAFC7', '#EAB669', '#FD94F6', '#C9C890', '#FEC542', '#7598F8', '#9E9790'];
         for (var i = 0; i < lis.length; ++i) {
             var a = lis[i].getElementsByTagName('a')[0];
             a.addEventListener('click', function(e) {

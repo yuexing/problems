@@ -14,9 +14,21 @@
   nav li{
     list-style: none;
     display: inline-block;
-    padding: 10px;
+    padding: 0px 10px 10px 10px;
   }
 
+  nav{
+    margin-left: -10px;
+  }
+
+  nav a {
+    font-size: 120%;
+    text-decoration: none;
+  }
+
+  h3{
+    padding-top: 20px;
+  }
 
   
   h1,
@@ -30,6 +42,10 @@
 
   h2{
     font-size: 150%;
+  }
+
+  h3{
+    font-size: 120%;
   }
   
   .axis path,
