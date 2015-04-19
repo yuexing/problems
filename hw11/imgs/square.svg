@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="72px" height="72px" viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3 (11970) - http://www.bohemiancoding.com/sketch -->
+    <title>square</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="providers-list" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="square" sketch:type="MSLayerGroup">
+            <rect id="Rectangle-2" fill="#999999" sketch:type="MSShapeGroup" x="0" y="0" width="72" height="72" rx="4"></rect>
+            <rect id="Rectangle-142" fill="#FFFFFF" sketch:type="MSShapeGroup" x="14" y="14" width="45" height="45" rx="8"></rect>
+            <rect id="Rectangle-143" fill="#999999" sketch:type="MSShapeGroup" x="22.5" y="22.5" width="27" height="27" rx="8"></rect>
+        </g>
+    </g>
+</svg>
