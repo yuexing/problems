@@ -24,7 +24,6 @@
             <li><a href="#">TBD</a></li>
             <li><a href="#">TBD</a></li>
             <li><a href="#">TBD</a></li>
-            <li><a href="#">TBD</a></li>
         </nav>
         <div class="graph"></div>
     </div>
@@ -32,7 +31,7 @@
     <script type="text/javascript">
     (function() {
         var langs = ['Java', 'Python', 'Javascript', 'C/C++', 'Scala', 'Dart', 'Go', 'Others'];
-        var colors = ['#D0021B', '#8AC2BD', '#DBAFC7', '#EAB669', '#FD94F6', '#C9C890', '#FEC542', '#7598F8', '#9E9790'];
+        var colors = ['#D0021B', '#8AC2BD', '#DBAFC7', '#EAB669', '#FD94F6', '#C9C890', '#FEC542', '#7598F8'];
         var color_map = (function() {
             var ret = {};
             for (var i = 0; i < langs.length; ++i) {
@@ -43,7 +42,6 @@
 
         var nav = document.getElementById("filter");
         var lis = document.getElementsByTagName("li");
-
 
         for (var i = 0; i < lis.length; ++i) {
             var a = lis[i].getElementsByTagName('a')[0];
@@ -127,17 +125,6 @@
                     .style("fill", function(d) {
                         return color_map[d['commits'][0]['lang']];
                     });
-
-                text
-                    .attr("y", j * 70 + 25)
-                    .attr("x", function(d, i) {
-                        return xScale(d['time']) - 5;
-                    })
-                    .attr("class", "value")
-                    .style("fill", function(d) {
-                        return color_map[d['commits'][0]['lang']];
-                    })
-                    .style("display", "none");
 
                 g.append("svg:image")
                     .attr("y", j * 70 + 10)
