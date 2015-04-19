@@ -31,7 +31,7 @@
     <script type="text/javascript" src="data.json"></script>
     <script type="text/javascript">
     (function() {
-        var langs = ['Javascript', 'Python', 'Ruby', 'Java', 'C/C++', 'PHP', 'Objective-C', 'Go', 'Others'];
+        var langs = ['Java', 'Python', 'Javascript', 'C/C++', 'Scala', 'Dart', 'Go', 'Others'];
         var colors = ['#D0021B', '#8AC2BD', '#DBAFC7', '#EAB669', '#FD94F6', '#C9C890', '#FEC542', '#7598F8', '#9E9790'];
         var color_map = (function() {
             var ret = {};
@@ -118,24 +118,24 @@
 
                 circles
                     .attr("cx", function(d, i) {
-                        return xScale(d[0]);
+                        return xScale(d['time']);
                     })
                     .attr("cy", j * 70 + 20)
                     .attr("r", function(d) {
                         return rScale(10);
                     })
                     .style("fill", function(d) {
-                        return color_map[d[1]];
+                        return color_map[d['commits'][0]['lang']];
                     });
 
                 text
                     .attr("y", j * 70 + 25)
                     .attr("x", function(d, i) {
-                        return xScale(d[0]) - 5;
+                        return xScale(d['time']) - 5;
                     })
                     .attr("class", "value")
                     .style("fill", function(d) {
-                        return color_map[d[1]];
+                        return color_map[d['commits'][0]['lang']];
                     })
                     .style("display", "none");
 
