@@ -40,14 +40,20 @@
             return ret;
         })();
 
+        // TODO: filter
         d3.select("#filter").selectAll("a")
-        .text(function(d, i) { return langs[i];})
+        .html(function(d, i) { return langs[i];})
         .style('color', function(d, i) { return colors[i]})
         .on('click', function(e) {
             alert("Filter is not ready, please wait...");
             e.preventDefault(); // so that disable default
             return false; // so that disable default in IE
         });
+
+        // tooltip
+        var tooltip = d3.select("body").append("div")   
+                    .attr("class", "tooltip")               
+                    .style("opacity", 0);
 
         var margin = {
                 top: 50,
@@ -115,8 +121,27 @@
                     .style("fill", function(d) {
                         return color_map[d['commits'][0]['lang']];
                     })
-                    .append("svg:title")
-                    .text(function(d) { return d['commits'][0]['lang']; });;
+                    .style("cursor", "pointer")
+                    .on('mouseover', function() {
+                        d3.select(this).style('stroke', 'black');
+                    })
+                    .on('mouseout', function() {
+                        d3.select(this).style('stroke', 'none');
+                        tooltip.transition().duration(500).style("opacity", 0); 
+                    })
+                    .on('click', function(d) {
+                        var str = "";
+                        for (i in d['commits']) {
+                            c = d['commits'][i];
+                            str += "<b>" + c['name'] + "</b>: " + c['lang'] + "<br>";
+                        }
+                        tooltip.transition()  
+                               .duration(200) 
+                               .style("opacity", .9);      
+                        tooltip.html(str)  
+                               .style("left", (d3.event.pageX) + "px")     
+                               .style("top", (d3.event.pageY - 28) + "px");    
+                    });
 
                 g.append("svg:image")
                     .attr("y", j * 70 + 10)
@@ -126,18 +151,6 @@
                     .attr("class", "label")
                     .attr("xlink:href", data[j]['name']);
             };
-
-            /*function mouseover(p) {
-                var g = d3.select(this).node().parentNode;
-                d3.select(g).selectAll("circle").style("display", "none");
-                d3.select(g).selectAll("text.value").style("display", "block");
-            }
-
-            function mouseout(p) {
-                var g = d3.select(this).node().parentNode;
-                d3.select(g).selectAll("circle").style("display", "block");
-                d3.select(g).selectAll("text.value").style("display", "none");
-            }*/
         }
 
         process(data);

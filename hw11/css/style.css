@@ -74,3 +74,15 @@
       font-size: 12px;
       font-weight: bold;
   }
+
+  div.tooltip {   
+  position: absolute;           
+  text-align: center;            
+  padding: 3px 1px;             
+  font: 12px sans-serif;        
+  background: #333;  
+  color: white; 
+  border: 0px;      
+  border-radius: 8px;           
+  pointer-events: none;         
+}
