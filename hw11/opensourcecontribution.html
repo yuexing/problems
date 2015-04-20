@@ -40,19 +40,14 @@
             return ret;
         })();
 
-        var nav = document.getElementById("filter");
-        var lis = document.getElementsByTagName("li");
-
-        for (var i = 0; i < lis.length; ++i) {
-            var a = lis[i].getElementsByTagName('a')[0];
-            a.addEventListener('click', function(e) {
-                alert("Filter is not ready, please wait...");
-                e.preventDefault(); // so that disable default
-                return false; // so that disable default in IE
-            }, /*useCapture*/ false);
-            a.innerHTML = langs[i];
-            a.setAttribute('style', 'color:' + colors[i]);
-        }
+        d3.select("#filter").selectAll("a")
+        .text(function(d, i) { return langs[i];})
+        .style('color', function(d, i) { return colors[i]})
+        .on('click', function(e) {
+            alert("Filter is not ready, please wait...");
+            e.preventDefault(); // so that disable default
+            return false; // so that disable default in IE
+        });
 
         var margin = {
                 top: 50,
@@ -105,11 +100,6 @@
                     .enter()
                     .append("circle");
 
-                var text = g.selectAll("text")
-                    .data(data[j]['commits'])
-                    .enter()
-                    .append("text");
-
                 var rScale = d3.scale.linear()
                     .domain([0, 10])
                     .range([2, 9]);
@@ -124,7 +114,9 @@
                     })
                     .style("fill", function(d) {
                         return color_map[d['commits'][0]['lang']];
-                    });
+                    })
+                    .append("svg:title")
+                    .text(function(d) { return d['commits'][0]['lang']; });;
 
                 g.append("svg:image")
                     .attr("y", j * 70 + 10)
