@@ -78,11 +78,11 @@
   div.tooltip {   
   position: absolute;           
   text-align: center;            
-  padding: 3px 1px;             
+  padding: 5px 3px;             
   font: 12px sans-serif;        
   background: #333;  
   color: white; 
   border: 0px;      
-  border-radius: 8px;           
-  pointer-events: none;         
+  border-radius: 8px;    
+  min-height: 50px;      
 }

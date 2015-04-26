@@ -51,9 +51,21 @@
         });
 
         // tooltip
+        var tooltip_el = null;
         var tooltip = d3.select("body").append("div")   
                     .attr("class", "tooltip")               
                     .style("opacity", 0);
+
+        $('.tooltip').on('mouseover', function(e) {
+            e.stopPropagation();
+        });
+
+        $(document.body).on('mouseover', function(e) {
+            d3.select(tooltip_el).attr('r', function() {
+                return rScale(10);
+            });
+            tooltip.transition().duration(500).style("opacity", 0);
+        });
 
         var margin = {
                 top: 50,
@@ -75,6 +87,10 @@
         var xAxis = d3.svg.axis()
             .scale(x)
             .orient("top");
+
+        var rScale = d3.scale.linear()
+                    .domain([0, 15])
+                    .range([2, 9]);
 
         var formatYears = d3.format("0000");
         xAxis.tickFormat(formatYears);
@@ -106,10 +122,6 @@
                     .enter()
                     .append("circle");
 
-                var rScale = d3.scale.linear()
-                    .domain([0, 10])
-                    .range([2, 9]);
-
                 circles
                     .attr("cx", function(d, i) {
                         return xScale(d['time']);
@@ -122,14 +134,18 @@
                         return color_map[d['commits'][0]['lang']];
                     })
                     .style("cursor", "pointer")
-                    .on('mouseover', function() {
-                        d3.select(this).style('stroke', 'black');
-                    })
-                    .on('mouseout', function() {
-                        d3.select(this).style('stroke', 'none');
-                        tooltip.transition().duration(500).style("opacity", 0); 
-                    })
-                    .on('click', function(d) {
+                    .on('mouseover', function(d) {
+                        d3.select(tooltip_el).attr('r', function() {
+                            return rScale(10);
+                        });
+                        tooltip_el = this;
+
+                        var self = d3.select(this);
+
+                        self.attr("r", function(d) {
+                            return rScale(15);
+                        });
+
                         var str = "";
                         for (i in d['commits']) {
                             c = d['commits'][i];
@@ -139,8 +155,10 @@
                                .duration(200) 
                                .style("opacity", .9);      
                         tooltip.html(str)  
-                               .style("left", (d3.event.pageX) + "px")     
-                               .style("top", (d3.event.pageY - 28) + "px");    
+                               .style("left", $(this).position().left * 1 + self.attr('r') * 1 + "px")     
+                               .style("top", $(this).position().top * 1 + self.attr('r') * 1 + "px");  
+
+                        d3.event.stopPropagation();
                     });
 
                 g.append("svg:image")
