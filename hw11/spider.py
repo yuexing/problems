@@ -1,7 +1,7 @@
 import random
 import json
 import requests
-import bs4
+#import bs4
 from collections import OrderedDict
 from operator import itemgetter
 
@@ -100,7 +100,7 @@ def process(company):
 	# time: 2010 -> 2015 (5)
 	# total: 1 -> 5 * 10
 	# permonth: 0 -> 10
-	total = random.randrange(20, 51)
+	total = random.randrange(30, 51)
 	data = {}
 	for i in range(1, total):
 		time = 2010 + (random.uniform(0, 1) * 5)
