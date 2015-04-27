@@ -1,3 +1,5 @@
+Language and the number of projects involved:
+
  :  46
 Java :  123
 Objective-C++ :  2
@@ -43,4 +45,5 @@ Go :  30
 Modelica :  1
 PHP :  10
 Lasso :  1
+
 OrderedDict([(u'Java', 123), (u'Python', 102), (u'JavaScript', 96), (u'C++', 73), (u'', 46), (u'Scala', 43), (u'Dart', 35), (u'C', 30), (u'Go', 30), (u'Ruby', 28), (u'Objective-C', 19), (u'HTML', 14), (u'PHP', 10), (u'VimL', 8), (u'CSS', 7), (u'R', 6), (u'Lua', 5), (u'Shell', 5), (u'Haskell', 4), (u'Groovy', 3), (u'Makefile', 3), (u'C#', 3), (u'Objective-C++', 2), (u'Matlab', 2), (u'D', 2), (u'OCaml', 2), (u'Emacs Lisp', 1), (u'ApacheConf', 1), (u'Perl', 1), (u'Groff', 1), (u'Processing', 1), (u'Common Lisp', 1), (u'CoffeeScript', 1), (u'Protocol Buffer', 1), (u'TeX', 1), (u'Bison', 1), (u'Cuda', 1), (u'Diff', 1), (u'Clojure', 1), (u'Erlang', 1), (u'Rust', 1), (u'Gosu', 1), (u'Hack', 1), (u'Modelica', 1), (u'Lasso', 1)])

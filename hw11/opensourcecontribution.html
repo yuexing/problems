@@ -17,7 +17,8 @@
 
         <h3>Important Notes:</h3>
         <ul>
-        <li> Data is retrived by a webpage crawler written in Python run against github.com </li>
+        <li> Data is retrived by a webpage crawler written in Python run against github.com/&lt;company&gt; </li>
+        <li> Languages listed are selected by statistics of <a href="./langs.txt">language rank among the selected company</a></li>
         <li> Each dot in the graph represent contribution in a time period, which says:
         <ul>
             <li> A dot <strong> can contain more than one languages </strong> </li>
@@ -44,7 +45,7 @@
     <script type="text/javascript" src="data.json"></script>
     <script type="text/javascript">
     (function() {
-        var langs = ['All', 'Java', 'Python', 'Javascript', 'C/C++', 'Scala', 'Dart', 'Go', 'Others'];
+        var langs = ['All', 'Java', 'Python', 'JavaScript', 'C/C++', 'Scala', 'Dart', 'Go', 'Others'];
         var colors = ['#000', '#D0021B', '#8AC2BD', '#DBAFC7', '#EAB669', '#FD94F6', '#C9C890', '#FEC542', '#7598F8'];
         var color_map = (function() {
             var ret = {};
@@ -70,9 +71,10 @@
                 $(this).css('border-bottom', colors[i] + ' 3px solid');
 
                 var data_container = document.getElementById('data-container');
-                var list = data_container.children;
-                for(var j = 1; j < list.length; ++j) {
-                    data_container.removeChild(list[j]);
+                var list = data_container.childNodes;
+                var len = list.length;
+                while(list.length > 1) {
+                    data_container.removeChild(list[list.length - 1]);
                 }
                 var lang = (i == 0? undefined: langs[i]);
                 process(data, lang);
@@ -147,6 +149,7 @@
 
 
         function process(data, lang) {
+            console.log(lang);
             for (var j = 0; j < data.length; j++) {
                 var g = svg.append("g").attr("class", "journal");
 
@@ -165,14 +168,20 @@
                             return rScale(10);
                         }
                         for (var i in d['commits']) {
-                            if(d['commits'][i]['lang'] == lang) {
+                            var c = d['commits'][i];
+                            if(c['lang'] == lang) {
                                 return rScale(10);
                             } 
                         }
                         return 0;
                     })
                     .style("fill", function(d) {
-                        return color_map[d['commits'][0]['lang']];
+                        if(!lang) {
+                            return color_map[d['commits'][0]['lang']];
+                        } else {
+                            return color_map[lang];
+                        }
+                        
                     })
                     .style("cursor", "pointer")
                     .on('mouseover', function(d) {
@@ -189,8 +198,10 @@
 
                         var str = "";
                         for (var i in d['commits']) {
-                            c = d['commits'][i];
-                            str += "<b>" + c['name'] + "</b>: " + c['lang'] + "<br>";
+                            var c = d['commits'][i];
+                            if(!lang || c['lang'] == lang) {
+                                str += "<b>" + c['name'] + "</b>: " + c['lang'] + "<br>";
+                            }
                         }
                         tooltip.transition()
                             .duration(200)

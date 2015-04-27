@@ -83,7 +83,7 @@ d = OrderedDict(sorted(langs.items(), key=itemgetter(1), reverse=True))
 print d
 """
 
-known_lang = set(['Java', 'Python', 'Javascript', 'C/C++', 'Scala', 'Dart', 'Go', 'Others']);
+known_lang = set(['Java', 'Python', 'JavaScript', 'C/C++', 'Scala', 'Dart', 'Go', 'Others']);
 
 class mylist(list):
 	def __str__(self):
@@ -100,7 +100,7 @@ def process(company):
 	# time: 2010 -> 2015 (5)
 	# total: 1 -> 5 * 10
 	# permonth: 0 -> 10
-	total = random.randrange(1, 51)
+	total = random.randrange(20, 51)
 	data = {}
 	for i in range(1, total):
 		time = 2010 + (random.uniform(0, 1) * 5)
@@ -108,6 +108,8 @@ def process(company):
 		commits = mylist()
 		for i in range(1, permonth):
 			idx = random.randrange(0, len(repos))
+			if(repos[idx]['lang'] == 'C' or repos[idx]['lang'] == 'C++') :
+				repos[idx]['lang'] = 'C/C++'
 			if(repos[idx]['lang'] not in known_lang):
 				repos[idx]['lang'] = 'Others'
 
@@ -117,7 +119,7 @@ def process(company):
 
 	isFirst = True
 
-	print("{\"name\": \"" + company + "\",", file=f)
+	print(",{\"name\": \"" + company + "\",", file=f)
 	print("\"commits\": [", file=f)
 	for key in data:
 		if(not data[key]):
@@ -136,8 +138,8 @@ def process(company):
 	print("]}", file=f)
 	f.close()
 
-#process("google");
-#process("linkedin");
-#process("twitter");
-#process("facebook");
-#process("square")
+process("google");
+process("linkedin");
+process("twitter");
+process("facebook");
+process("square")
