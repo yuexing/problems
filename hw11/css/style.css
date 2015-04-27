@@ -4,6 +4,10 @@
       font-size: 14px;
   }
 
+  strong {
+    font-size: 110%;
+  }
+  
   /*******layout********/
   .wrapper{
     width: 960px;

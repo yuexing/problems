@@ -14,8 +14,22 @@
         <h1>What Tech Giants Contribute to Open source?</h1>
         <h2>Compare the open source contributions of 5 tech giants over the last 5 years.</h2>
         <p>It might surprise you just how often large companies give away their code to the open source community. At that point, anyone can contribute, debug, or download the code from a repository on GitHub and then use it for themselves. Let us take a look at those open source projects initiated by these giant tech companies.</p>
+
+        <h3>Important Notes:</h3>
+        <ul>
+        <li> Data is retrived by a webpage crawler written in Python run against github.com </li>
+        <li> Each dot in the graph represent contribution in a time period, which says:
+        <ul>
+            <li> A dot <strong> can contain more than one languages </strong> </li>
+            <li> The color of the dot represents <strong> the language of the most amount of code </strong> </li>
+            <li> Hover on the dot shows a list of '&lt; project &gt; - &lt; language &gt;' </li>
+        </ul>
+        <li> Filter will filter out the dot in which the selected language is not involved </li>
+        </ul>
+
         <h3>Filter Projects by Programming Language</h3>
         <nav id="filter">
+            <li><a href="#">TBD</a></li>
             <li><a href="#">TBD</a></li>
             <li><a href="#">TBD</a></li>
             <li><a href="#">TBD</a></li>
@@ -30,8 +44,8 @@
     <script type="text/javascript" src="data.json"></script>
     <script type="text/javascript">
     (function() {
-        var langs = ['Java', 'Python', 'Javascript', 'C/C++', 'Scala', 'Dart', 'Go', 'Others'];
-        var colors = ['#D0021B', '#8AC2BD', '#DBAFC7', '#EAB669', '#FD94F6', '#C9C890', '#FEC542', '#7598F8'];
+        var langs = ['All', 'Java', 'Python', 'Javascript', 'C/C++', 'Scala', 'Dart', 'Go', 'Others'];
+        var colors = ['#000', '#D0021B', '#8AC2BD', '#DBAFC7', '#EAB669', '#FD94F6', '#C9C890', '#FEC542', '#7598F8'];
         var color_map = (function() {
             var ret = {};
             for (var i = 0; i < langs.length; ++i) {
@@ -42,19 +56,35 @@
 
         // TODO: filter
         d3.select("#filter").selectAll("a")
-        .html(function(d, i) { return langs[i];})
-        .style('color', function(d, i) { return colors[i]})
-        .on('click', function(e) {
-            alert("Filter is not ready, please wait...");
-            e.preventDefault(); // so that disable default
-            return false; // so that disable default in IE
-        });
+            .html(function(d, i) {
+                return langs[i];
+            })
+            .style('color', function(d, i) {
+                return colors[i]
+            })
+            .style('border-bottom', function(d, i) {
+                return i == 0? colors[i] + ' 3px solid': 'none';
+            })
+            .on('click', function(d, i) {
+                d3.select("#filter").selectAll("a").style('border', 'none');
+                $(this).css('border-bottom', colors[i] + ' 3px solid');
+
+                var data_container = document.getElementById('data-container');
+                var list = data_container.children;
+                for(var j = 1; j < list.length; ++j) {
+                    data_container.removeChild(list[j]);
+                }
+                var lang = (i == 0? undefined: langs[i]);
+                process(data, lang);
+                d3.event.preventDefault(); // so that disable default
+                return false; // so that disable default in IE
+            });
 
         // tooltip
         var tooltip_el = null;
-        var tooltip = d3.select("body").append("div")   
-                    .attr("class", "tooltip")               
-                    .style("opacity", 0);
+        var tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
 
         $('.tooltip').on('mouseover', function(e) {
             e.stopPropagation();
@@ -89,31 +119,34 @@
             .orient("top");
 
         var rScale = d3.scale.linear()
-                    .domain([0, 15])
-                    .range([2, 9]);
+            .domain([0, 15])
+            .range([0, 9]);
 
         var formatYears = d3.format("0000");
         xAxis.tickFormat(formatYears);
 
+        // data-container: contains x-axis and the data
         var svg = d3.select(".graph").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .style("margin-left", margin.left + "px")
             .append("g")
+            .attr("id", "data-container")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-        function process(data) {
-            x.domain([start_year, end_year]);
-            var xScale = d3.scale.linear()
-                .domain([start_year, end_year])
-                .range([0, width]);
+        x.domain([start_year, end_year]);
+        var xScale = d3.scale.linear()
+            .domain([start_year, end_year])
+            .range([0, width]);
 
-            svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
 
+
+        function process(data, lang) {
             for (var j = 0; j < data.length; j++) {
                 var g = svg.append("g").attr("class", "journal");
 
@@ -128,7 +161,15 @@
                     })
                     .attr("cy", j * 70 + 20)
                     .attr("r", function(d) {
-                        return rScale(10);
+                        if(!lang) {
+                            return rScale(10);
+                        }
+                        for (var i in d['commits']) {
+                            if(d['commits'][i]['lang'] == lang) {
+                                return rScale(10);
+                            } 
+                        }
+                        return 0;
                     })
                     .style("fill", function(d) {
                         return color_map[d['commits'][0]['lang']];
@@ -147,16 +188,16 @@
                         });
 
                         var str = "";
-                        for (i in d['commits']) {
+                        for (var i in d['commits']) {
                             c = d['commits'][i];
                             str += "<b>" + c['name'] + "</b>: " + c['lang'] + "<br>";
                         }
-                        tooltip.transition()  
-                               .duration(200) 
-                               .style("opacity", .9);      
-                        tooltip.html(str)  
-                               .style("left", $(this).position().left * 1 + self.attr('r') * 1 + "px")     
-                               .style("top", $(this).position().top * 1 + self.attr('r') * 1 + "px");  
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", .9);
+                        tooltip.html(str)
+                            .style("left", $(this).position().left * 1 + self.attr('r') * 1 + "px")
+                            .style("top", $(this).position().top * 1 + self.attr('r') * 1 + "px");
 
                         d3.event.stopPropagation();
                     });
