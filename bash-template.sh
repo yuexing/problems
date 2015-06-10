@@ -1,6 +1,28 @@
 #!/bin/bash
 
-echo "hello ";
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+ORG='\033[0;33m'
+NO_COLOR='\033[0m'
+
+echo "${RED} red ${GREEN} green ${ORG} orange ${NO_COLOR}";
+
+case "$@" in
+    "slow")
+        ;;
+    *)
+    ;;
+esac
+
+# set variable c
+# when referring to a field, use the prefix '$' (the positional variable); otherwise, use c
+awk '{print $c}' c=${1:-1}
+# eg.
+awk "/$regex/"'{print FILENAME, ":", NR, ":", $0, ":", comment}' comment="$comment" $file
+# awk begin can be used to write toy program
+awk 'BEGIN{x =1; print x++, " ", ++x}'
+# start an awk file with for the interpreter
+#!/bin/awk -f
 
 EXTRA=""
 while [ $# -gt 1 ]; do      #use gt/lt/eq
