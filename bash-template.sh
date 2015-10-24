@@ -19,20 +19,20 @@ echo "${RED} red ${GREEN} green ${ORG} orange ${NO_COLOR}";
 
 case "$@" in
     "slow")
-        ;;
+        echo "slow" ;;
     *)
-    ;;
+      echo "others" ;;
 esac
 
 # set variable c
 # when referring to a field, use the prefix '$' (the positional variable); otherwise, use c
-awk '{print $c}' c=${1:-1}
+#awk '{print $c}' c=${1:-1}
 # eg.
-awk "/$regex/"'{print FILENAME, ":", NR, ":", $0, ":", comment}' comment="$comment" $file
+#awk "/$regex/"'{print FILENAME, ":", NR, ":", $0, ":", comment}' comment="$comment" $file
 # awk begin can be used to write toy program
-awk 'BEGIN{x =1; print x++, " ", ++x}'
+#awk 'BEGIN{x =1; print x++, " ", ++x}'
 # start an awk file with for the interpreter
-#!/bin/awk -f
+##!/bin/awk -f
 
 EXTRA=""
 while [ $# -gt 1 ]; do      #use gt/lt/eq
@@ -44,19 +44,32 @@ done
 # (...): for subshell
 # { ... }: for grouping
 # ((...)): arithmetic 
-# [[ ... ]]: conditional expression -n number -e exists
-# stop using [] now!
-i=$((1+2));
+# [[ ... ]]: conditional expression, -n number -e exists, ||, && instead of -o, -a
+# !!! stop using [] now!
+# http://stackoverflow.com/questions/2188199/how-to-use-double-or-single-bracket-parentheses-curly-braces
+i=$((1+9));
 echo $i;
 
-if [[ $i = 1 || $i = 3 ]]; then
-    echo "yes!"                             #!
+b=true
+
+if $b; then echo 'yes!'; else echo 'no...'; fi
+
+if [ $i = 10 -o $i = 3 ]; then
+    echo "yes! string comparison and -o for [ "           #!
 else
     echo "hmmm..."
 fi
 
-if [[ $i > 1 ]]; then
-    echo "definitely should use [[]]";      #!
+if [ $i = 10 ] || [ $i = 3 ]; then
+    echo "yes! string comparison and || for [["           #!
+else
+    echo "hmmm..."
+fi
+
+if [[ $i = 10 || $i = 3 ]]; then
+    echo "yes! string comparison"           #!
+else
+    echo "hmmm..."
 fi
 
 if [[ "abc" = a* ]]; then
@@ -100,7 +113,7 @@ done
 # find 
 # -exec: each command ends with ';', need to be \; also use sh -c "cmd && cmd"
 # -execdir: go into the dir and exec
-find . -name "* *"  -execdir rename -v 's/ /_/' {} \;
+# find . -name "* *"  -execdir rename -v 's/ /_/' {} \;
 
 # file read/write
 cat > temp << END
