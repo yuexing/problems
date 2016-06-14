@@ -13,9 +13,12 @@ int get_dist(gnode_t* from, gnode_t* to);
 // each loop, relax the unvisited neighbors.
 // alternatively, we can relax on all neighbors, which is slow (but correct
 // for graph with negative edges) and subject to negative cycles.
+// Q: it cannot work correctly with negative path?
+// A: because the visited set won't be visited again even though there's a less expensive path.
 // Q: how to detect negative cycles? since we relax on its neighbors which is
-// no more than n, then if a node is pushed into the worklist for n times,
+// A: no more than n, then if a node is pushed into the worklist for n times,
 // then there is a negative cycle.
+// TODO: use priority_queue to increase performance!
 int djikstra(gnode_t* src, gnode_t* dest)
 {
     priority_queue<gnode_t*> worklist;

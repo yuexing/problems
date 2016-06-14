@@ -150,7 +150,6 @@ const Node *find_lca(const Node* root, int a, int b)
     ret_t rv = _find_lca(root, a, b);
     return rv.lca;
 }
-}
 
 // given an interval, print all nodes in the tree within that interval.
 // NB: the interval is made of double.
