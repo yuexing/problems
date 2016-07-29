@@ -1,0 +1,97 @@
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.tab-pane .row {
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #eee;
+}
+
+.row .name:after {
+    content: '   ';
+    display: block;
+    height: 1px;
+    background-color: #e0e0e0;
+    margin-top: 5px;
+}
+
+.popu {
+    visibility: hidden;
+}
+
+.price {
+    color: #ffbb55;
+    float: right;
+    font-size: 28px;
+}
+
+.price:before {
+    content: 'From';
+    font-size: 13px;
+    margin-right: 10px;
+}
+
+.price:after {
+    content: 'USD/Month';
+    display: block;
+    font-size: 13px;
+    margin-top: 10px;
+    text-align: right;
+}
+
+.sort{
+	margin: 20px 0;
+}
+.sort-btn{
+	color: #333;
+	font-size: 20px;
+	cursor: pointer;
+	padding: 10px;
+}
+
+.sort-btn.chosen{
+	background-color: #ffbb55;
+	color: #333;
+}
+
+.sort-btn.chosen:hover{
+	color: #333;
+}
+
+.sort-btn:hover{
+	text-decoration: none;
+	color: #ffbb55;
+}
+
+.button{
+	display: block;
+	width: 140px;
+	margin-top: 20px;
+	padding: 10px;
+	background-color: #ffbb55;
+	border: 2px solid #ffbb55;
+	color: #fff;
+	cursor: pointer;
+	text-align: center;
+}
+
+.button:hover{
+	text-decoration: none;
+	color: #ffbb55;
+	background-color: transparent;
+}
+
+img {
+    max-height: 200px;
+    width: auto;
+}
+
+
+@media(max-width: 767px) {
+    .row img {
+        width: 100%;
+    }
+}
